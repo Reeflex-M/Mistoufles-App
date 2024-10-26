@@ -1,12 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# class Note(models.Model):
-
-from django.db import models
-
-from django.db import models
-
 class Animal(models.Model):
     id_animal = models.AutoField(primary_key=True)
     nom_animal = models.CharField(max_length=100)
@@ -18,6 +12,7 @@ class Animal(models.Model):
     antipuce = models.DateField(null=True, blank=True)
     sterilise = models.DateField(null=True, blank=True)
     biberonnage = models.DateField(null=True, blank=True)
+    images = models.ManyToManyField('Image', blank=True, related_name='animals')
     note = models.TextField(null=True, blank=True)
     statut = models.ForeignKey('Statut', on_delete=models.SET_NULL, null=True, blank=True)
     provenance = models.ForeignKey('Provenance', on_delete=models.SET_NULL, null=True, blank=True)
@@ -34,8 +29,6 @@ class Statut(models.Model):
     
     def __str__(self):
         return self.libelle_statut
-    
-
 
 class FA(models.Model):
     id_fa = models.AutoField(primary_key=True)
@@ -45,32 +38,28 @@ class FA(models.Model):
     
     def __str__(self):
         return self.prenom_fa
-    
-    
+
 class Categorie(models.Model):
     id_categorie = models.AutoField(primary_key=True)
     libelle_categoie = models.CharField(max_length=100)
     
     def __str__(self):
         return self.libelle_categorie
-    
-    
+
 class Provenance(models.Model):
     id_provenance = models.AutoField(primary_key=True)
     libelle_provenance = models.CharField(max_length=100)
     
     def __str__(self):
         return self.libelle_provenance
-    
-    
+
 class Sexe(models.Model):
     id_sexe = models.AutoField(primary_key=True)
     libelle_sexe = models.CharField(max_length=100)
     
     def __str__(self):
         return self.libelle_sexe
-    
-    
+
 class Archive(models.Model):
     id_animal = models.AutoField(primary_key=True)
     nom_animal = models.CharField(max_length=100)
@@ -88,14 +77,12 @@ class Archive(models.Model):
     categorie = models.ForeignKey('Categorie', on_delete=models.SET_NULL, null=True, blank=True)
     sexe = models.ForeignKey('Sexe', on_delete=models.SET_NULL, null=True, blank=True)
     fa = models.ForeignKey('FA', on_delete=models.SET_NULL, null=True, blank=True)
-    
-    
-    
-    
-    
-    
 
+class Image(models.Model):
+    id_image = models.AutoField(primary_key=True)
+    animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name='animal_images')
+    image = models.ImageField(upload_to='animaux/')
+    description = models.CharField(max_length=255, blank=True)
 
-
-
-    
+    def __str__(self):
+        return f"{self.animal.nom_animal} - {self.image.name}"
