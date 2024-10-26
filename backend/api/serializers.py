@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Animal
+from .models import Animal, Statut, FA, Provenance, Sexe, Categorie
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,3 +26,38 @@ class AnimalSerializer(serializers.ModelSerializer):
                   "sterilise", 
                   "biberonnage", 
                   "note"]
+        
+
+class StatutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Statut
+        fields = ["id_statut", 
+                  "libelle_statut"]
+        
+class FASerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FA
+        fields = ["id_fa", 
+                  "prenom_fa",
+                  "libelle_facebook",
+                  "libelle_veterinaire"]
+        
+        
+class CategorieSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categorie
+        fields = ["id_categorie", 
+                  "libelle_categorie"]
+
+class ProvenanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Provenance
+        fields = ["id_provenance", 
+                  "libelle_provenance"]
+        
+class SexeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sexe
+        fields = ["id_sexe", 
+                  "libelle_sexe"]
+                 
