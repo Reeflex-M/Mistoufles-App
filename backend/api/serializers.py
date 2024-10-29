@@ -25,7 +25,12 @@ class AnimalSerializer(serializers.ModelSerializer):
                   "antipuce", 
                   "sterilise", 
                   "biberonnage", 
-                  "note"]
+                  "note",
+                  "statut",
+                  "provenance",
+                  "categorie",
+                  "sexe",
+                  "fa"]
         
 
 class StatutSerializer(serializers.ModelSerializer):
@@ -39,8 +44,11 @@ class FASerializer(serializers.ModelSerializer):
         model = FA
         fields = ["id_fa", 
                   "prenom_fa",
-                  "libelle_facebook",
-                  "libelle_veterinaire"]
+                  "commune_fa",
+                  "telephone_fa",
+                  "libelle_reseausociaux",
+                  "libelle_veterinaire",
+                  "note"]
         
         
 class CategorieSerializer(serializers.ModelSerializer):

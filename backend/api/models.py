@@ -32,12 +32,17 @@ class Statut(models.Model):
 
 class FA(models.Model):
     id_fa = models.AutoField(primary_key=True)
-    prenom_fa = models.CharField(max_length=100)
-    libelle_facebook = models.CharField(max_length=100)
-    libelle_veterinaire = models.CharField(max_length=100)
+    prenom_fa = models.CharField(max_length=100, null=True, blank=True)
+    commune_fa = models.CharField(max_length=100, null=True, blank=True)
+    telephone_fa = models.CharField(max_length=20, null=True, blank=True)
+    libelle_reseausociaux = models.CharField(max_length=100, null=True, blank=True)
+    libelle_veterinaire = models.CharField(max_length=100, null=True, blank=True)
+    note = models.TextField(null=True, blank=True)
     
     def __str__(self):
         return self.prenom_fa
+    
+    
 
 class Categorie(models.Model):
     id_categorie = models.AutoField(primary_key=True)
