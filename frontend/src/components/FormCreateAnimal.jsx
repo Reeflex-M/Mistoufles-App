@@ -167,8 +167,20 @@ function FormCreateAnimal({ onClose }) {
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Choisissez un statut</option>
-                <option value="1">Statut 1</option>
-                {/* Ajoutez ici les autres options */}
+                <option value="1">En cours</option>
+                <option value="2">Adopté</option>
+                <option value="3">prêt JA</option>
+                <option value="4">Sociabilisation</option>
+                <option value="5">Chat libre</option>
+                <optgroup label="Décès">
+                  <option value="6">Naturel</option>
+                  <option value="7">Euthanasie</option>
+                </optgroup>
+                <option value="8">En soin</option>
+                <option value="9">Transfert refuge</option>
+                <option value="10">Biberonnage</option>
+                <option value="12">Refuge</option>
+                <option value="11">Autres</option>
               </select>
             </div>
             <div>
@@ -180,8 +192,20 @@ function FormCreateAnimal({ onClose }) {
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Choisissez une provenance</option>
-                <option value="1">Provenance 1</option>
-                {/* Ajoutez ici les autres options */}
+                <option value="1">Fourrière</option>
+                <optgroup label="PEC Sociale">
+                  <option value="7">Ehpad / Décès</option>
+                  <option value="8">Surpopulation</option>
+                  <option value="9">Hospitalisation</option>
+                  <option value="10">Autres</option>
+                </optgroup>
+                <optgroup label="Abandon">
+                  <option value="2">Anonyme</option>
+                  <option value="3">Non-Anonyme</option>
+                </optgroup>
+                <option value="4">Errant</option>
+                <option value="5">Saisie</option>
+                <option value="6">Autres</option>
               </select>
             </div>
             <div>
@@ -193,8 +217,14 @@ function FormCreateAnimal({ onClose }) {
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Choisissez une catégorie</option>
-                <option value="1">Catégorie 1</option>
-                {/* Ajoutez ici les autres options */}
+                <option value="1" class="py-2 hover:bg-gray-100">Chaton</option>
+                <option value="2">Chat</option>
+                <option value="3">Chiot</option>
+                <option value="4">Chien</option>
+                <option value="5">Chat libre</option>
+                <option value="6">Rongeur</option>
+                <option value="7">Oiseau</option>
+                <option value="8">Autres</option>
               </select>
             </div>
             <div>
@@ -275,5 +305,7 @@ function FormCreateAnimal({ onClose }) {
     </div>
   );
 }
+
+
 
 export default FormCreateAnimal;
