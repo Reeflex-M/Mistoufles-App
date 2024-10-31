@@ -46,7 +46,7 @@ class FA(models.Model):
 
 class Categorie(models.Model):
     id_categorie = models.AutoField(primary_key=True)
-    libelle_categoie = models.CharField(max_length=100)
+    libelle_categorie = models.CharField(max_length=100)
     
     def __str__(self):
         return self.libelle_categorie
