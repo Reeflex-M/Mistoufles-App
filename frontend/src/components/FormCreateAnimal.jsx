@@ -17,32 +17,43 @@ function FormCreateAnimal({ onClose }) {
   const [categorie, setCategorie] = useState('');
   const [sexe, setSexe] = useState('');
   const [fa, setFa] = useState('');
-  const [filteredFas, setFilteredFas] = useState([]);
+  const [fas, setFas] = useState([]); // Nouveau état pour stocker tous les FA
+  const [filteredFas, setFilteredFas] = useState([]); // Nouveau état pour les FA filtrés
+
+  const accessToken = localStorage.getItem(ACCESS_TOKEN);
 
   useEffect(() => {
-    const searchFas = async () => {
-      if (fa.length > 2) {
-        try {
-          const response = await fetch(`http://127.0.0.1:8000/api/fa/?q=${encodeURIComponent(fa)}`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${ACCESS_TOKEN}`
-            }
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setFilteredFas(data);
+    const fetchFas = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/fa/', {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
           }
-        } catch (error) {
-          console.error("Erreur lors de la recherche des FA:", error);
+        });
+        console.log('Réponse reçue:', response);
+        if (response.ok) {
+          const data = await response.json();
+          console.log("FA bien lu", data);
+          setFas(data);
+          setFilteredFas(data);
+        } else {
+          console.log('Réponse non OK:', response.status, response.statusText);
+          throw new Error('Réponse non OK');
         }
-      } else {
-        setFilteredFas([]);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des FA:", error);
       }
     };
   
-    searchFas();
-  }, [fa]);
+    fetchFas();
+  }, []);
+
+  const handleFaChange = (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    setFa(e.target.value);
+    setFilteredFas(fas.filter(fa => fa.prenom.toLowerCase().includes(searchTerm)));
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -66,15 +77,16 @@ function FormCreateAnimal({ onClose }) {
     };
 
     try {
-      const response = await fetch('/api/animal/', {
+      const response = await fetch('http://127.0.0.1:8000/api/animal/create/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer YOUR_ACCESS_TOKEN_HERE'
+          'Authorization': `Bearer ${ACCESS_TOKEN}`
         },
         body: JSON.stringify(animalData)
       });
 
+      console.log('Réponse reçue:', response);
       if (!response.ok) {
         throw new Error('Erreur lors de la création de l\'animal');
       }
@@ -186,33 +198,35 @@ function FormCreateAnimal({ onClose }) {
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Statut et caractéristiques</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* ... autres champs ... */}
+
             <div>
               <label htmlFor="faInput" className="block text-sm font-medium text-gray-700 mb-1">FA</label>
-              <input
-                type="text"
-                id="faInput"
-                value={fa}
-                onChange={(e) => setFa(e.target.value)}
-                placeholder="Entrez le nom de la FA"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {filteredFas.length > 0 && (
-                <ul className="mt-2 bg-gray-100 p-2 rounded-md">
-                  {filteredFas.map((faItem) => (
-                    <li key={faItem.id}>
-                      <button 
-                        onClick={() => {
-                          setFa(faItem.name);
-                          setFilteredFas([]);
-                        }}
-                        className="w-full text-left p-2 hover:bg-gray-200"
-                      >
-                        {faItem.name}
-                      </button>
-                    </li>
+              <div className="relative">
+                <input
+                  type="text"
+                  id="faInput"
+                  value={fa}
+                  onChange={handleFaChange}
+                  placeholder="Saisir le prénom du FA"
+                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+               {filteredFas.length > 0 && (
+                <div className="absolute bg-white border rounded-md shadow-md w-full mt-1">
+                  {filteredFas.map((f) => (
+                    <div 
+                      key={`fa-suggestion-${f.id}`}
+                      className="p-2 cursor-pointer hover:bg-gray-100"
+                      onClick={() => {
+                        setFa(f.prenom);
+                        setFilteredFas([]);
+                      }}
+                    >
+                      {f.prenom}
+                    </div>
                   ))}
-                </ul>
+                </div>
               )}
+              </div>
             </div>
           </div>
         </div>
@@ -244,8 +258,8 @@ function FormCreateAnimal({ onClose }) {
           </div>
         </div>
 
-        {/* Notes */}
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
+                {/* Notes */}
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
           <label htmlFor="noteTextarea" className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
           <textarea
             id="noteTextarea"
@@ -268,3 +282,6 @@ function FormCreateAnimal({ onClose }) {
 }
 
 export default FormCreateAnimal;
+
+        
+           
