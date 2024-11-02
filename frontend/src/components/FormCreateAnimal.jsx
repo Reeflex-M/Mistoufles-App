@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ACCESS_TOKEN } from '../constants';
 
 function FormCreateAnimal({ onClose }) {
   const [name, setName] = useState('');
@@ -11,15 +12,41 @@ function FormCreateAnimal({ onClose }) {
   const [sterilise, setSterilise] = useState(false);
   const [biberonnage, setBiberonnage] = useState(false);
   const [note, setNote] = useState('');
-  const [statut, setStatut] = useState(''); 
+  const [statut, setStatut] = useState('');
   const [provenance, setProvenance] = useState('');
   const [categorie, setCategorie] = useState('');
   const [sexe, setSexe] = useState('');
   const [fa, setFa] = useState('');
+  const [filteredFas, setFilteredFas] = useState([]);
+
+  useEffect(() => {
+    const searchFas = async () => {
+      if (fa.length > 2) {
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/api/fa/?q=${encodeURIComponent(fa)}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${ACCESS_TOKEN}`
+            }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setFilteredFas(data);
+          }
+        } catch (error) {
+          console.error("Erreur lors de la recherche des FA:", error);
+        }
+      } else {
+        setFilteredFas([]);
+      }
+    };
+  
+    searchFas();
+  }, [fa]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+
     const animalData = {
       nom_animal: name,
       date_naissance: birthDate,
@@ -35,7 +62,7 @@ function FormCreateAnimal({ onClose }) {
       provenance: parseInt(provenance),
       categorie: parseInt(categorie),
       sexe: parseInt(sexe),
-      fa: parseInt(fa)
+      fa: fa.trim() // Utilisez la valeur trimée de fa
     };
 
     try {
@@ -158,100 +185,34 @@ function FormCreateAnimal({ onClose }) {
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Statut et caractéristiques</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* ... autres champs ... */}
             <div>
-              <label htmlFor="statutSelect" className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
-              <select
-                id="statutSelect"
-                value={statut}
-                onChange={(e) => setStatut(e.target.value)}
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Choisissez un statut</option>
-                <option value="1">En cours</option>
-                <option value="2">Adopté</option>
-                <option value="3">prêt JA</option>
-                <option value="4">Sociabilisation</option>
-                <option value="5">Chat libre</option>
-                <optgroup label="Décès">
-                  <option value="6">Naturel</option>
-                  <option value="7">Euthanasie</option>
-                </optgroup>
-                <option value="8">En soin</option>
-                <option value="9">Transfert refuge</option>
-                <option value="10">Biberonnage</option>
-                <option value="12">Refuge</option>
-                <option value="11">Autres</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="provenanceSelect" className="block text-sm font-medium text-gray-700 mb-1">Provenance</label>
-              <select
-                id="provenanceSelect"
-                value={provenance}
-                onChange={(e) => setProvenance(e.target.value)}
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Choisissez une provenance</option>
-                <option value="1">Fourrière</option>
-                <optgroup label="PEC Sociale">
-                  <option value="7">Ehpad / Décès</option>
-                  <option value="8">Surpopulation</option>
-                  <option value="9">Hospitalisation</option>
-                  <option value="10">Autres</option>
-                </optgroup>
-                <optgroup label="Abandon">
-                  <option value="2">Anonyme</option>
-                  <option value="3">Non-Anonyme</option>
-                </optgroup>
-                <option value="4">Errant</option>
-                <option value="5">Saisie</option>
-                <option value="6">Autres</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="categorieSelect" className="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
-              <select
-                id="categorieSelect"
-                value={categorie}
-                onChange={(e) => setCategorie(e.target.value)}
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Choisissez une catégorie</option>
-                <option value="1" class="py-2 hover:bg-gray-100">Chaton</option>
-                <option value="2">Chat</option>
-                <option value="3">Chiot</option>
-                <option value="4">Chien</option>
-                <option value="5">Chat libre</option>
-                <option value="6">Rongeur</option>
-                <option value="7">Oiseau</option>
-                <option value="8">Autres</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="sexeSelect" className="block text-sm font-medium text-gray-700 mb-1">Sexe</label>
-              <select
-                id="sexeSelect"
-                value={sexe}
-                onChange={(e) => setSexe(e.target.value)}
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Choisissez un sexe</option>
-                <option value="1">Mâle</option>
-                <option value="2">Femelle</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="faSelect" className="block text-sm font-medium text-gray-700 mb-1">FA</label>
-              <select
-                id="faSelect"
+              <label htmlFor="faInput" className="block text-sm font-medium text-gray-700 mb-1">FA</label>
+              <input
+                type="text"
+                id="faInput"
                 value={fa}
                 onChange={(e) => setFa(e.target.value)}
+                placeholder="Entrez le nom de la FA"
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Choisissez une FA</option>
-                <option value="1">FA 1</option>
-                {/* Ajoutez ici les autres options */}
-              </select>
+              />
+              {filteredFas.length > 0 && (
+                <ul className="mt-2 bg-gray-100 p-2 rounded-md">
+                  {filteredFas.map((faItem) => (
+                    <li key={faItem.id}>
+                      <button 
+                        onClick={() => {
+                          setFa(faItem.name);
+                          setFilteredFas([]);
+                        }}
+                        className="w-full text-left p-2 hover:bg-gray-200"
+                      >
+                        {faItem.name}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         </div>
@@ -305,7 +266,5 @@ function FormCreateAnimal({ onClose }) {
     </div>
   );
 }
-
-
 
 export default FormCreateAnimal;
