@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FormCreateAnimal from '../components/FormCreateAnimal';
 import FormCreateFA from '../components/FormCreateFA';
 import { FaPaw, FaCat, FaUserFriends, FaPlus, FaUserCircle, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import { RiHome5Fill } from 'react-icons/ri';
-import { ACCESS_TOKEN, REFRESH_TOKEN } from '../constants';
-import { User } from 'django.contrib.auth.models';
+import { ACCESS_TOKEN } from '../constants';
+import { Logout } from '../App';
 
 
 function Home() {
@@ -12,10 +12,35 @@ function Home() {
   const [showFAForm, setShowFAForm] = useState(false);
   const [activeItem, setActiveItem] = useState('refuge');
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [currentUser, setCurrentUser] = useState({});
 
-  const currentUser = {
-    name: `${User.Username}`,
-  };
+  
+  const accessToken = localStorage.getItem(ACCESS_TOKEN);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/current_user/', {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setCurrentUser(data);
+        console.log('Informations de l\'utilisateur:', data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des informations de l\'utilisateur:', error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, [accessToken]);
+
+ 
 
 
   const toggleUserMenu = () => {
@@ -24,6 +49,7 @@ function Home() {
 
   const handleLogout = () => {
     console.log("Déconnexion...");
+    Logout();
   };
 
   const toggleAnimalForm = () => {
@@ -60,7 +86,7 @@ function Home() {
           >
             <FaUserCircle className="text-2xl text-purple-600" />
             <div className="flex-1 text-left">
-              <div className="font-medium text-gray-800">{currentUser.name}</div>
+              <div className="font-medium text-gray-800"></div>{currentUser.username}
 
             </div>
           </button>
