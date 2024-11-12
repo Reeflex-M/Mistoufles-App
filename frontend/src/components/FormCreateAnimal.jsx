@@ -25,6 +25,9 @@ function FormCreateAnimal({ onClose }) {
   const [showFaList, setShowFaList] = useState(false); // Nouvel état pour contrôler la visibilité
   const faInputRef = useRef(null); // Référence pour le conteneur de l'input FA
   const [sexes, setSexes] = useState([]); // Nouvel état pour stocker les sexes
+  const [provenances, setProvenances] = useState([]); 
+  const [statuts, setStatuts] = useState([]); // Ajout du state pour les statuts
+  const [categories, setCategories] = useState([]); // Ajout du state pour les catégories
 
   const accessToken = localStorage.getItem(ACCESS_TOKEN);
 
@@ -81,7 +84,82 @@ function FormCreateAnimal({ onClose }) {
       }
     };
 
+    const fetchProvenances = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/animal/provenance/", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Données brutes des provenances:", data);
+          const provenanceArray = Array.isArray(data) ? data : Object.values(data);
+          console.log("Tableau des provenances après traitement:", provenanceArray);
+          setProvenances(provenanceArray); // Correction: utiliser setProvenances au lieu de setSexes
+        } else {
+          console.error("Erreur réponse API provenance:", response.status);
+          throw new Error("Réponse non OK");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des provenance:", error);
+        setProvenances([]);
+      }
+    };
+
+    const fetchStatuts = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/animal/statut/", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Données brutes des statuts:", data);
+          const statutArray = Array.isArray(data) ? data : Object.values(data);
+          console.log("Tableau des statuts après traitement:", statutArray);
+          setStatuts(statutArray);
+        } else {
+          console.error("Erreur réponse API statut:", response.status);
+          throw new Error("Réponse non OK");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des statuts:", error);
+        setStatuts([]);
+      }
+    };
+
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/animal/categorie/", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Données brutes des catégories:", data);
+          const categorieArray = Array.isArray(data) ? data : Object.values(data);
+          console.log("Tableau des catégories après traitement:", categorieArray);
+          setCategories(categorieArray);
+        } else {
+          console.error("Erreur réponse API categorie:", response.status);
+          throw new Error("Réponse non OK");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des categories:", error);
+        setCategories([]);
+      }
+    };
+
     fetchSexes();
+    fetchProvenances(); // Appeler fetchProvenances
+    fetchStatuts(); // Appel de la nouvelle fonction
+    fetchCategories(); // Appel de la nouvelle fonction
   }, [accessToken]);
 
   // Ajouter useEffect pour gérer les clics en dehors
@@ -414,6 +492,81 @@ function FormCreateAnimal({ onClose }) {
                   ))
                 ) : (
                   <option value="" disabled>Chargement des sexes...</option>
+                )}
+              </select>
+            </div>
+            <div>
+              <label
+                htmlFor="provenance"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Provenance
+              </label>
+              <select
+                id="provenance"
+                value={provenance}
+                onChange={(e) => setProvenance(e.target.value)}
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Sélectionner la provenance</option>
+                {provenances && provenances.length > 0 ? (
+                  provenances.map((p) => (
+                    <option key={`provenance-${p.id_provenance || p.id}`} value={p.id_provenance || p.id}>
+                      {p.libelle_provenance || p.libelle || 'Sans libellé'}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>Chargement des provenances...</option>
+                )}
+              </select>
+            </div>
+            <div>
+              <label
+                htmlFor="statut"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Statut
+              </label>
+              <select
+                id="statut"
+                value={statut}
+                onChange={(e) => setStatut(e.target.value)}
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Sélectionner le statut</option>
+                {statuts && statuts.length > 0 ? (
+                  statuts.map((s) => (
+                    <option key={`statut-${s.id_statut || s.id}`} value={s.id_statut || s.id}>
+                      {s.libelle_statut || s.libelle || 'Sans libellé'}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>Chargement des statuts...</option>
+                )}
+              </select>
+            </div>
+            <div>
+              <label
+                htmlFor="categorie"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Catégorie
+              </label>
+              <select
+                id="categorie"
+                value={categorie}
+                onChange={(e) => setCategorie(e.target.value)}
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Sélectionner la catégorie</option>
+                {categories && categories.length > 0 ? (
+                  categories.map((c) => (
+                    <option key={`categorie-${c.id_categorie || c.id}`} value={c.id_categorie || c.id}>
+                      {c.libelle_categorie || c.libelle || 'Sans libellé'}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>Chargement des catégories...</option>
                 )}
               </select>
             </div>
