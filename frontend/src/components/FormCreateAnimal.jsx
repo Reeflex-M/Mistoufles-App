@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { ACCESS_TOKEN } from "../constants";
+import { FaCaretDown } from "react-icons/fa"; // Importer l'icône
 
 function FormCreateAnimal({ onClose }) {
   const [name, setName] = useState("");
@@ -20,6 +21,9 @@ function FormCreateAnimal({ onClose }) {
   const [fa, setFa] = useState("");
   const [fas, setFas] = useState([]); // Nouveau état pour stocker tous les FA
   const [filteredFas, setFilteredFas] = useState([]); // Nouveau état pour les FA filtrés
+  const [selectedFaId, setSelectedFaId] = useState(null); // Nouvel état pour l'ID du FA
+  const [showFaList, setShowFaList] = useState(false); // Nouvel état pour contrôler la visibilité
+  const faInputRef = useRef(null); // Référence pour le conteneur de l'input FA
 
   const accessToken = localStorage.getItem(ACCESS_TOKEN);
 
@@ -50,12 +54,57 @@ function FormCreateAnimal({ onClose }) {
     fetchFas();
   }, []);
 
+  // Ajouter useEffect pour gérer les clics en dehors
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (faInputRef.current && !faInputRef.current.contains(event.target)) {
+        setShowFaList(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleFaChange = (e) => {
     const searchTerm = e.target.value.toLowerCase();
     setFa(e.target.value);
-    setFilteredFas(
-      fas.filter((fa) => fa.prenom.toLowerCase().includes(searchTerm))
-    );
+    setSelectedFaId(null); // Réinitialiser l'ID quand l'utilisateur tape
+    setShowFaList(true); // Montrer la liste quand l'utilisateur tape
+    if (searchTerm.length > 0) {
+      setFilteredFas(
+        fas.filter((fa) => {
+          const prenomMatch = fa?.prenom_fa?.toLowerCase()?.includes(searchTerm) || false;
+          return prenomMatch;
+        })
+      );
+    } else {
+      setFilteredFas([]);
+    }
+  };
+
+  const toggleFaList = () => {
+    setShowFaList(true);
+    setFa("");
+    setSelectedFaId(null);
+    setFilteredFas(fas);
+  };
+
+  const handleFaClick = (f) => {
+    setFa(f?.prenom_fa || '');
+    setSelectedFaId(f?.id_fa); // Stocker l'ID du FA sélectionné
+    setShowFaList(false);
+    setFilteredFas([]);
+  };
+
+  // Ajouter cette fonction utilitaire pour formater les dates
+  const formatDate = (dateString) => {
+    if (!dateString) return null;
+    // Vérifie si la date est valide
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return null;
+    // Retourne la date au format YYYY-MM-DD
+    return date.toISOString().split('T')[0];
   };
 
   const handleSubmit = async (event) => {
@@ -66,17 +115,14 @@ function FormCreateAnimal({ onClose }) {
       return;
     }
 
-    // Assurer que la date est au bon format ou null
-    const formattedBirthDate = birthDate ? birthDate : null;
-
     const animalData = {
       nom_animal: name,
-      date_naissance: formattedBirthDate,
+      date_naissance: formatDate(birthDate),
       num_identification: identificationNumber || null,
-      primo_vacc: primoVacc || null,
-      rappel_vacc: rappelVacc || null,
-      vermifuge: vermifuge || null,
-      antipuce: antipuce || null,
+      primo_vacc: formatDate(primoVacc),
+      rappel_vacc: formatDate(rappelVacc),
+      vermifuge: formatDate(vermifuge),
+      antipuce: formatDate(antipuce),
       sterilise: sterilise ? 1 : 0,
       biberonnage: biberonnage ? 1 : 0,
       note: note || "",
@@ -84,7 +130,7 @@ function FormCreateAnimal({ onClose }) {
       provenance: parseInt(provenance) || null,
       categorie: parseInt(categorie) || null,
       sexe: parseInt(sexe) || null,
-      fa: fa.trim() || null,
+      fa: selectedFaId, // Utiliser l'ID au lieu du prénom
     };
 
     try {
@@ -102,9 +148,19 @@ function FormCreateAnimal({ onClose }) {
 
       if (!response.ok) {
         let errorMessage = "Erreur lors de la création de l'animal";
+        
+        // Gestion spécifique des différentes erreurs
         if (data.date_naissance) {
           errorMessage = `Erreur de date de naissance: ${data.date_naissance.join(", ")}`;
         }
+        if (data.num_identification) {
+          if (data.num_identification.includes("animal with this num identification already exists")) {
+            errorMessage = "Ce numéro d'identification existe déjà dans la base de données.";
+          } else {
+            errorMessage = `Erreur de numéro d'identification: ${data.num_identification.join(", ")}`;
+          }
+        }
+        
         alert(errorMessage);
         return;
       }
@@ -265,27 +321,38 @@ function FormCreateAnimal({ onClose }) {
               >
                 FA
               </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  id="faInput"
-                  value={fa}
-                  onChange={handleFaChange}
-                  placeholder="Saisir le prénom du FA"
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {filteredFas.length > 0 && (
-                  <div className="absolute bg-white border rounded-md shadow-md w-full mt-1">
+              <div ref={faInputRef} className="relative">
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    id="faInput"
+                    value={fa}
+                    onChange={handleFaChange}
+                    onFocus={() => setShowFaList(true)}
+                    placeholder="Saisir le prénom du FA"
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    autoComplete="off"
+                  />
+                  <FaCaretDown
+                    className="ml-2 cursor-pointer"
+                    onClick={toggleFaList}
+                  />
+                </div>
+                {showFaList && filteredFas.length > 0 && (
+                  <div className="absolute z-10 w-full bg-white border rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
                     {filteredFas.map((f) => (
                       <div
-                        key={`fa-suggestion-${f.id}`}
-                        className="p-2 cursor-pointer hover:bg-gray-100"
-                        onClick={() => {
-                          setFa(f.prenom);
-                          setFilteredFas([]);
-                        }}
+                        key={`fa-suggestion-${f?.id_fa}`}
+                        className="p-3 hover:bg-gray-100 cursor-pointer transition-colors duration-150"
+                        onClick={() => handleFaClick(f)}
                       >
-                        {f.prenom}
+                        <div className="font-medium">{f?.prenom_fa || 'Sans prénom'}</div>
+                        <div className="text-sm text-gray-600">
+                          {f?.commune_fa && <span>{f.commune_fa}</span>}
+                          {f?.libelle_reseausociaux && (
+                            <span className="ml-2">• {f.libelle_reseausociaux}</span>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>

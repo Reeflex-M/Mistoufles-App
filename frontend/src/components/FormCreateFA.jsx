@@ -56,129 +56,127 @@ function FormCreateFA({ onClose }) {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="card bg-white rounded-lg shadow-md">
-        <div className="card-body">
-          <h2 className="text-2xl font-bold text-center mb-4">Créer une FA</h2>
+    <div className="max-w-md mx-auto h-full">
+      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg flex flex-col h-full">
+        <div className="p-4">
+          <h2 className="text-xl font-bold mb-4 text-purple-800 text-center border-b-2 border-purple-200 pb-2">
+            Nouvelle Famille d'Accueil
+          </h2>
 
-          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+          {error && <p className="text-red-400 text-sm mb-3 bg-red-50 p-2 rounded">{error}</p>}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-3">
             <div>
-              <label
-                htmlFor="prenom_fa"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Prénom FA*
+              <label htmlFor="prenom_fa" className="text-sm text-gray-600 block mb-1">
+                Prénom*
               </label>
               <input
                 type="text"
                 id="prenom_fa"
                 value={prenom_fa}
                 onChange={(e) => setPrenomFa(e.target.value)}
-                placeholder="Entrez le prénom"
+                className="w-full px-3 py-2 border border-gray-200 rounded-md transition-all duration-200 ease-in-out focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+                placeholder="Prénom de la FA"
                 required
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
-            <div>
-              <label
-                htmlFor="commune_fa"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Commune FA
-              </label>
-              <input
-                type="text"
-                id="commune_fa"
-                value={commune_fa}
-                onChange={(e) => setCommuneFa(e.target.value)}
-                placeholder="Entrez la commune"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="commune_fa" className="text-sm text-gray-600 block mb-1">
+                  Commune
+                </label>
+                <input
+                  type="text"
+                  id="commune_fa"
+                  value={commune_fa}
+                  onChange={(e) => setCommuneFa(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-md transition-all duration-200 ease-in-out focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+                  placeholder="Ville"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="telephone_fa" className="text-sm text-gray-600 block mb-1">
+                  Téléphone
+                </label>
+                <input
+                  type="tel"
+                  id="telephone_fa"
+                  value={telephone_fa}
+                  onChange={(e) => setTelephone_fa(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-md transition-all duration-200 ease-in-out focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+                  placeholder="0X XX XX XX XX"
+                />
+              </div>
             </div>
 
             <div>
-              <label
-                htmlFor="libelle_reseausociaux"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Libellé des réseaux sociaux
+              <label htmlFor="libelle_reseausociaux" className="text-sm text-gray-600 block mb-1">
+                Réseaux sociaux
               </label>
               <input
                 type="text"
                 id="libelle_reseausociaux"
                 value={libelle_reseausociaux}
                 onChange={(e) => setLibelle_reseausociaux(e.target.value)}
-                placeholder="Entrez le libellé des réseaux sociaux"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-200 rounded-md transition-all duration-200 ease-in-out focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+                placeholder="@pseudo"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="telephone_fa"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Téléphone FA
-              </label>
-              <input
-                type="tel"
-                id="telephone_fa"
-                value={telephone_fa}
-                onChange={(e) => setTelephone_fa(e.target.value)}
-                placeholder="Entrez le numéro de téléphone"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="libelle_veterinaire"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Libellé du vétérinaire
+              <label htmlFor="libelle_veterinaire" className="text-sm text-gray-600 block mb-1">
+                Vétérinaire
               </label>
               <input
                 type="text"
                 id="libelle_veterinaire"
                 value={libelle_veterinaire}
                 onChange={(e) => setLibelle_veterinaire(e.target.value)}
-                placeholder="Entrez le libellé du vétérinaire"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-200 rounded-md transition-all duration-200 ease-in-out focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+                placeholder="Nom du vétérinaire"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="note"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Note
+              <label htmlFor="note" className="text-sm text-gray-600 block mb-1">
+                Notes
               </label>
               <textarea
                 id="note"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="Entrez une note si nécessaire"
+                className="w-full px-3 py-2 border border-gray-200 rounded-md transition-all duration-200 ease-in-out focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none resize-none"
                 rows="3"
-                className="w-full p-2 border rounded-md resize-y focus:outline-none focus:ring-2 focus:ring-blue-500"
-              ></textarea>
+                placeholder="Informations complémentaires..."
+              />
             </div>
+          </div>
+        </div>
 
+        <div className="mt-auto p-4 bg-gray-50 rounded-b-lg border-t">
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2 border-2 border-purple-300 text-purple-700 rounded-md hover:bg-purple-50 hover:border-purple-400 transition-all duration-300 font-medium"
+            >
+              Annuler
+            </button>
             <button
               type="submit"
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full mt-4 transition duration-300 ease-in-out transform hover:-translate-y-0.5"
+              className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-all duration-300 shadow-md hover:shadow-lg font-medium"
             >
-              Créer FA
+              Créer
             </button>
-          </form>
+          </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
+
 FormCreateFA.propTypes = {
   onClose: PropTypes.func.isRequired,
 };

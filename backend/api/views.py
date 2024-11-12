@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics
-from .serializers import UserSerializer, AnimalSerializer, FASerializer, UserSerializer
+from .serializers import UserSerializer, AnimalSerializer, FASerializer, UserSerializer, StatutSerializer, ProvenanceSerializer, SexeSerializer, CategorieSerializer
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
-from .models import Animal,  FA
+from .models import Animal, FA, Statut, Provenance, Sexe, Categorie
 
 #ANIMAL
 class AnimalListCreate(generics.ListCreateAPIView):
@@ -47,6 +47,35 @@ class FAListCreate(generics.ListCreateAPIView):
             print(serializer.errors)
 
 
+
+
+
+
+
+
+# Statut
+class StatutList(generics.ListAPIView):
+    queryset = Statut.objects.all()
+    serializer_class = StatutSerializer
+    permission_classes = [IsAuthenticated]
+
+# Provenance
+class ProvenanceList(generics.ListAPIView):
+    queryset = Provenance.objects.all()
+    serializer_class = ProvenanceSerializer
+    permission_classes = [IsAuthenticated]
+
+# Sexe
+class SexeList(generics.ListAPIView):
+    queryset = Sexe.objects.all()
+    serializer_class = SexeSerializer
+    permission_classes = [IsAuthenticated]
+
+# Catégorie
+class CategorieList(generics.ListAPIView):
+    queryset = Categorie.objects.all()
+    serializer_class = CategorieSerializer
+    permission_classes = [IsAuthenticated]
 
 
 
