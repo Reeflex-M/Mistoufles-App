@@ -61,10 +61,18 @@ function FormCreateAnimal({ onClose }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (!name) {
+      alert("Veuillez remplir le champ du nom.");
+      return;
+    }
+
+    // Assurer que la date est au bon format ou null
+    const formattedBirthDate = birthDate ? birthDate : null;
+
     const animalData = {
       nom_animal: name,
-      date_naissance: birthDate,
-      num_identification: identificationNumber,
+      date_naissance: formattedBirthDate,
+      num_identification: identificationNumber || null,
       primo_vacc: primoVacc || null,
       rappel_vacc: rappelVacc || null,
       vermifuge: vermifuge || null,
@@ -72,11 +80,11 @@ function FormCreateAnimal({ onClose }) {
       sterilise: sterilise ? 1 : 0,
       biberonnage: biberonnage ? 1 : 0,
       note: note || "",
-      statut: parseInt(statut),
-      provenance: parseInt(provenance),
-      categorie: parseInt(categorie),
-      sexe: parseInt(sexe),
-      fa: fa.trim(), // Utilisez la valeur trimée de fa
+      statut: parseInt(statut) || null,
+      provenance: parseInt(provenance) || null,
+      categorie: parseInt(categorie) || null,
+      sexe: parseInt(sexe) || null,
+      fa: fa.trim() || null,
     };
 
     try {
@@ -89,16 +97,23 @@ function FormCreateAnimal({ onClose }) {
         body: JSON.stringify(animalData),
       });
 
-      console.log("Réponse reçue:", response);
+      const data = await response.json();
+      console.log("Réponse reçue:", data);
+
       if (!response.ok) {
-        throw new Error("Erreur lors de la création de l'animal");
+        let errorMessage = "Erreur lors de la création de l'animal";
+        if (data.date_naissance) {
+          errorMessage = `Erreur de date de naissance: ${data.date_naissance.join(", ")}`;
+        }
+        alert(errorMessage);
+        return;
       }
 
-      console.log("Animal créé avec succès");
+      alert("Animal créé avec succès!");
       onClose();
     } catch (error) {
       console.error("Erreur:", error);
-      // Affichez un message d'erreur à l'utilisateur
+      alert("Une erreur est survenue lors de la communication avec le serveur");
     }
   };
 
