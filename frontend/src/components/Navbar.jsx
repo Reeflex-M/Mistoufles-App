@@ -120,7 +120,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-64 bg-white shadow-lg text-gray-600 p-6 fixed top-0 left-0 bottom-0 md:block hidden border-r border-gray-200">
+    <nav className="w-56 bg-white shadow-lg text-gray-600 p-6 fixed top-0 left-0 bottom-0 md:block hidden border-r border-gray-200">
       <Link
         to="/"
         className="flex items-center space-x-3 mb-8 hover:opacity-80 transition-opacity"

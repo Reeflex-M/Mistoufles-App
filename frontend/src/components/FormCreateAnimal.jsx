@@ -24,6 +24,7 @@ function FormCreateAnimal({ onClose }) {
   const [selectedFaId, setSelectedFaId] = useState(null); // Nouvel état pour l'ID du FA
   const [showFaList, setShowFaList] = useState(false); // Nouvel état pour contrôler la visibilité
   const faInputRef = useRef(null); // Référence pour le conteneur de l'input FA
+  const [sexes, setSexes] = useState([]); // Nouvel état pour stocker les sexes
 
   const accessToken = localStorage.getItem(ACCESS_TOKEN);
 
@@ -53,6 +54,35 @@ function FormCreateAnimal({ onClose }) {
 
     fetchFas();
   }, []);
+
+  useEffect(() => {
+    const fetchSexes = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/animal/sexe/", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Données brutes des sexes:", data);
+          // Vérifiez si data est un tableau ou un objet avec une propriété contenant le tableau
+          const sexesArray = Array.isArray(data) ? data : Object.values(data);
+          console.log("Tableau des sexes après traitement:", sexesArray);
+          setSexes(sexesArray);
+        } else {
+          console.error("Erreur réponse API sexes:", response.status);
+          throw new Error("Réponse non OK");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des sexes:", error);
+        setSexes([]);
+      }
+    };
+
+    fetchSexes();
+  }, [accessToken]);
 
   // Ajouter useEffect pour gérer les clics en dehors
   useEffect(() => {
@@ -358,6 +388,34 @@ function FormCreateAnimal({ onClose }) {
                   </div>
                 )}
               </div>
+            </div>
+            <div>
+              <label
+                htmlFor="sexe"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Sexe
+              </label>
+              <select
+                id="sexe"
+                value={sexe}
+                onChange={(e) => {
+                  console.log("Valeur sélectionnée:", e.target.value);
+                  setSexe(e.target.value);
+                }}
+                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option key="default-select" value="">Sélectionner le sexe</option>
+                {sexes && sexes.length > 0 ? (
+                  sexes.map((s) => (
+                    <option key={`sexe-${s.id_sexe || s.id}`} value={s.id_sexe || s.id}>
+                      {s.libelle_sexe || s.libelle || 'Sans libellé'}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>Chargement des sexes...</option>
+                )}
+              </select>
             </div>
           </div>
         </div>

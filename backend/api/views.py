@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from rest_framework import generics
+from rest_framework import generics, status
 from .serializers import UserSerializer, AnimalSerializer, FASerializer, UserSerializer, StatutSerializer, ProvenanceSerializer, SexeSerializer, CategorieSerializer
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -40,14 +40,22 @@ class FAListCreate(generics.ListCreateAPIView):
     def get_queryset(self):
         return FA.objects.all()
     
-    def perform_create_fa(self, serializer):
+    # Correction du nom de la méthode
+    def perform_create(self, serializer):  # Changé de perform_create_fa à perform_create
+        serializer.save()  # Supprimé user car pas nécessaire pour FA
+
+class FAUpdate(generics.UpdateAPIView):
+    queryset = FA.objects.all()
+    serializer_class = FASerializer
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save(user=self.request.user)
-        else:
-            print(serializer.errors)
-
-
-
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
