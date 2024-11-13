@@ -35,7 +35,14 @@ class SexeSerializer(serializers.ModelSerializer):
 class FASerializer(serializers.ModelSerializer):
     class Meta:
         model = FA
-        fields = ['id_fa', 'prenom_fa']
+        fields = ["id_fa", 
+                  "prenom_fa",
+                  "commune_fa",
+                  "telephone_fa",
+                  "libelle_reseausociaux",
+                  "libelle_veterinaire",
+                  "note"]
+        
 
 class AnimalSerializer(serializers.ModelSerializer):
     statut = StatutSerializer(read_only=True)

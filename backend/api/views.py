@@ -58,6 +58,12 @@ class FAUpdate(generics.UpdateAPIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class FADetail(generics.RetrieveAPIView):
+    queryset = FA.objects.all()
+    serializer_class = FASerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'  # Utilise l'ID de la FA comme paramètre de recherche
+
 
 
 

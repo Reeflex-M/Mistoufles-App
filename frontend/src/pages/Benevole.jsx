@@ -15,69 +15,28 @@ const BenevoleTable = ({ fas, onRowUpdate }) => {
   );
 
   const columns = [
-    { field: 'id', headerName: 'ID', width: 50, editable: false },
-    { 
-      field: 'prenom_fa', 
-      headerName: 'Prénom', 
-      width: 100,
-      editable: true,
-    },
-    { 
-      field: 'nom_fa', 
-      headerName: 'Nom', 
-      width: 100,
-      editable: true,
-    },
-    { 
-      field: 'adresse_fa', 
-      headerName: 'Adresse', 
-      width: 200,
-      editable: true,
-    },
-    { 
-      field: 'commune_fa', 
-      headerName: 'Commune', 
-      width: 100,
-      editable: true,
-    },
-    { 
-      field: 'code_postal_fa', 
-      headerName: 'Code Postal', 
-      width: 100,
-      editable: true,
-    },
-    { 
-      field: 'telephone_fa', 
-      headerName: 'Tél', 
-      width: 130,
-      editable: true,
-    },
-    { 
-      field: 'email_fa', 
-      headerName: 'Email', 
-      width: 200,
-      editable: true,
-    },
-    { 
-      field: 'libelle_reseausociaux', 
-      headerName: 'Réseaux', 
-      width: 120,
-      editable: true,
-    },
-    { 
-      field: 'libelle_veterinaire', 
-      headerName: 'Véto', 
-      width: 120,
-      editable: true,
-    },
-    { 
-      field: 'note', 
-      headerName: 'Notes', 
-      width: 150, 
-      flex: 1,
-      editable: true,
-    }
-  ];
+    { field: 'prenom_fa', headerName: 'Prénom', flex: 0.5, minWidth: 80 },
+    { field: 'nom_fa', headerName: 'Nom', flex: 0.5, minWidth: 80 },
+    { field: 'adresse_fa', headerName: 'Adresse', flex: 0.8, minWidth: 120 },
+    { field: 'commune_fa', headerName: 'Commune', flex: 0.5, minWidth: 80 },
+    { field: 'code_postal_fa', headerName: 'CP', flex: 0.3, minWidth: 60 },
+    { field: 'telephone_fa', headerName: 'Tél', flex: 0.5, minWidth: 100 },
+    { field: 'email_fa', headerName: 'Email', flex: 0.8, minWidth: 120 },
+    { field: 'libelle_reseausociaux', headerName: 'RS', flex: 0.4, minWidth: 60 },
+    { field: 'libelle_veterinaire', headerName: 'Véto', flex: 0.5, minWidth: 80 },
+    { field: 'note', headerName: 'Notes', flex: 0.6, minWidth: 100 }
+  ].map(column => ({
+    ...column,
+    editable: column.editable !== false,
+    headerClassName: 'super-app-theme--header',
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) => (
+      <div title={params.value} className="truncate w-full text-center">
+        {params.value}
+      </div>
+    )
+  }));
 
   return (
     <div className="space-y-4">
@@ -95,9 +54,8 @@ const BenevoleTable = ({ fas, onRowUpdate }) => {
           rows={filteredRows}
           columns={columns}
           initialState={{
-            pagination: {
-              pageSize: 15,
-            },
+            pagination: { pageSize: 15 },
+            columns: { columnVisibilityModel: {} }
           }}
           pageSizeOptions={[15, 30, 50]}
           disableSelectionOnClick
@@ -106,39 +64,35 @@ const BenevoleTable = ({ fas, onRowUpdate }) => {
           experimentalFeatures={{ newEditingApi: true }}
           sx={{ 
             backgroundColor: 'white',
-            border: '1px solid #e5e7eb',
+            '& .super-app-theme--header': {
+              backgroundColor: '#f3f4f6',
+              fontSize: '0.7rem',
+              fontWeight: 'bold',
+              borderRight: '1px solid #e5e7eb',
+              borderBottom: '2px solid #d1d5db',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            },
             '& .MuiDataGrid-cell': {
-              fontSize: '0.875rem',
-              padding: '8px',
+              fontSize: '0.7rem',
+              padding: '2px',
               borderRight: '1px solid #e5e7eb',
               borderBottom: '1px solid #e5e7eb',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis'
             },
-            '& .MuiDataGrid-columnHeaders': {
-              backgroundColor: '#f3f4f6',
-              borderBottom: '2px solid #d1d5db',
-              '& .MuiDataGrid-columnHeader': {
-                borderRight: '1px solid #d1d5db'
-              }
-            },
-            '& .MuiDataGrid-columnSeparator': {
-              display: 'none'
-            },
-            '& .MuiDataGrid-footerContainer': {
-              borderTop: '2px solid #e5e7eb'
-            },
             '& .MuiDataGrid-row': {
-              '&:hover': {
-                backgroundColor: '#f8fafc'
+              '&:nth-of-type(odd)': {
+                backgroundColor: '#f9fafb'
               },
-              '&.Mui-selected': {
-                backgroundColor: 'transparent',
-                '&:hover': {
-                  backgroundColor: '#f8fafc'
-                }
+              '&:hover': {
+                backgroundColor: '#f3f4f6'
               }
+            },
+            '& .MuiDataGrid-columnHeaders': {
+              borderBottom: 'none'
             }
           }}
         />
@@ -229,7 +183,7 @@ function Benevole() {
         <Navbar />
       </div>
       <div className="flex-grow flex flex-col md:pl-64 relative z-0">
-        <main className="flex-grow p-8">
+        <main className="flex-grow p-4">
           {isMainPage && (
             <BenevoleTable 
               fas={filteredFas} 

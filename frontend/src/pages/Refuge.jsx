@@ -3,9 +3,127 @@ import { useLocation } from 'react-router-dom';
 import Navbar from "../components/Navbar";
 import { DataGrid } from '@mui/x-data-grid';
 import { ACCESS_TOKEN } from "../constants";
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 
+// Popup Onclick fa_libelle
+const FaDialog = ({ open, onClose, faData }) => {
+  return (
+    <Dialog 
+      open={open} 
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        style: {
+          borderRadius: '8px',
+        }
+      }}
+    >
+      <DialogTitle 
+        className="bg-gray-50 border-b px-6 py-4"
+      >
+        <div className="text-xl font-medium text-gray-900">
+          Informations Famille d'Accueil
+        </div>
+      </DialogTitle>
+      <DialogContent className="px-6 py-4">
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-6">
+            {/* Informations personnelles */}
+            <div className="space-y-4">
+              <h3 className="text-sm uppercase tracking-wider text-gray-500 font-medium">Coordonnées</h3>
+              <div className="space-y-3 ml-1">
+                <div className="flex items-center">
+                  <span className="text-gray-600 w-32 text-sm">Prénom</span>
+                  <span className="text-gray-900">{faData?.prenom_fa || 'N/A'}</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-gray-600 w-32 text-sm">Commune</span>
+                  <span className="text-gray-900">{faData?.commune_fa || 'N/A'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact */}
+            <div className="space-y-4">
+              <h3 className="text-sm uppercase tracking-wider text-gray-500 font-medium">Contact</h3>
+              <div className="space-y-3 ml-1">
+                <div className="flex items-center">
+                  <span className="text-gray-600 w-32 text-sm">Téléphone</span>
+                  <span className="text-gray-900">{faData?.telephone_fa || 'N/A'}</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-gray-600 w-32 text-sm">Email</span>
+                  <span className="text-gray-900">{faData?.email_fa || 'N/A'}</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-gray-600 w-32 text-sm">Réseaux</span>
+                  <span className="text-gray-900">{faData?.libelle_reseausociaux || 'N/A'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Suivi */}
+            <div className="space-y-4">
+              <h3 className="text-sm uppercase tracking-wider text-gray-500 font-medium">Suivi médical</h3>
+              <div className="space-y-3 ml-1">
+                <div className="flex items-center">
+                  <span className="text-gray-600 w-32 text-sm">Vétérinaire</span>
+                  <span className="text-gray-900">{faData?.libelle_veterinaire || 'N/A'}</span>
+                </div>
+                <div className="flex items-start">
+                  <span className="text-gray-600 w-32 text-sm pt-1">Note</span>
+                  <span className="text-gray-900 flex-1 whitespace-pre-wrap">{faData?.note || 'N/A'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+      <DialogActions className="px-6 py-4 border-t">
+        <button 
+          onClick={onClose}
+          className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-150"
+        >
+          Fermer
+        </button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+
+//DataGrid
 const AnimalTable = ({ animals, onRowUpdate }) => {
+  const accessToken = localStorage.getItem(ACCESS_TOKEN);
   const [searchText, setSearchText] = useState('');
+  const [faDialogOpen, setFaDialogOpen] = useState(false);
+  const [selectedFa, setSelectedFa] = useState(null);
+
+  const handleFaClick = async (faId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/fa/${faId}/`, {
+        method: 'GET',  
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`, 
+        },
+        credentials: 'include'  
+      });
+      if (response.ok) {
+        const faData = await response.json();
+        setSelectedFa(faData);
+        setFaDialogOpen(true);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données FA:", error);
+    }
+  };
 
   const filteredRows = animals.filter(row => 
     Object.values(row).some(value => 
@@ -14,24 +132,39 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
   );
 
   const columns = [
-    { field: 'id', headerName: 'ID', flex: 0.3, minWidth: 50 },
-    { field: 'nom_animal', headerName: 'Nom', flex: 0.6, minWidth: 80 },
-    { field: 'date_naissance', headerName: 'Naissance', flex: 0.7, minWidth: 90 },
-    { field: 'num_identification', headerName: 'ID#', flex: 0.7, minWidth: 90 },
-    { field: 'primo_vacc', headerName: '1er Vacc', flex: 0.7, minWidth: 90 },
-    { field: 'rappel_vacc', headerName: 'Rappel', flex: 0.7, minWidth: 90 },
-    { field: 'vermifuge', headerName: 'Vermif.', flex: 0.6, minWidth: 80 },
-    { field: 'antipuce', headerName: 'Anti-p.', flex: 0.6, minWidth: 80 },
-    { field: 'sterilise', headerName: 'Stér.', flex: 0.4, minWidth: 60, type: 'boolean' },
-    { field: 'biberonnage', headerName: 'Bib.', flex: 0.4, minWidth: 60, type: 'boolean' },
-    { field: 'statut_libelle', headerName: 'Statut', flex: 0.6, minWidth: 80 },
-    { field: 'provenance_libelle', headerName: 'Prov.', flex: 0.6, minWidth: 80 },
-    { field: 'categorie_libelle', headerName: 'Cat.', flex: 0.6, minWidth: 80 },
-    { field: 'sexe_libelle', headerName: 'Sexe', flex: 0.4, minWidth: 60 },
-    { field: 'fa_libelle', headerName: 'FA', flex: 0.7, minWidth: 90 }
+    { field: 'nom_animal', headerName: 'Nom', flex: 0.8, minWidth: 100 },
+    { field: 'date_naissance', headerName: 'Naissance', flex: 0.9, minWidth: 100 },
+    { field: 'num_identification', headerName: 'ID#', flex: 0.9, minWidth: 100 },
+    { field: 'primo_vacc', headerName: '1er Vacc', flex: 0.9, minWidth: 100 },
+    { field: 'rappel_vacc', headerName: 'Rappel', flex: 0.9, minWidth: 100 },
+    { field: 'vermifuge', headerName: 'Vermif.', flex: 0.8, minWidth: 90 },
+    { field: 'antipuce', headerName: 'Anti-p.', flex: 0.8, minWidth: 90 },
+    { field: 'sterilise', headerName: 'Stér.', flex: 0.5, minWidth: 70, type: 'boolean' },
+    { field: 'biberonnage', headerName: 'Bib.', flex: 0.5, minWidth: 70, type: 'boolean' },
+    { field: 'statut_libelle', headerName: 'Statut', flex: 0.8, minWidth: 90 },
+    { field: 'provenance_libelle', headerName: 'Prov.', flex: 0.8, minWidth: 90 },
+    { field: 'categorie_libelle', headerName: 'Cat.', flex: 0.7, minWidth: 80 },
+    { field: 'sexe_libelle', headerName: 'Sexe', flex: 0.6, minWidth: 70 },
+    { 
+      field: 'fa_libelle', 
+      headerName: 'FA', 
+      flex: 0.9, 
+      minWidth: 100,
+      renderCell: (params) => {
+        if (!params.value) return '';
+        return (
+          <div
+            className="text-blue-600 cursor-pointer hover:underline"
+            onClick={() => handleFaClick(params.row.id_fa)}
+          >
+            {params.value}
+          </div>
+        );
+      }
+    }
   ].map(column => ({
     ...column,
-    editable: true,
+    editable: column.field !== 'fa_libelle',
     headerClassName: 'super-app-theme--header',
     headerAlign: 'center',
     align: 'center'
@@ -90,6 +223,11 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
           }}
         />
       </div>
+      <FaDialog
+        open={faDialogOpen}
+        onClose={() => setFaDialogOpen(false)}
+        faData={selectedFa}
+      />
     </div>
   );
 };
@@ -128,7 +266,8 @@ function Refuge() {
             provenance_libelle: animal.provenance?.libelle_provenance || '',
             categorie_libelle: animal.categorie?.libelle_categorie || '',
             sexe_libelle: animal.sexe?.libelle_sexe || '',
-            fa_libelle: animal.fa?.prenom_fa || ''
+            fa_libelle: animal.fa?.prenom_fa || '',
+            id_fa: animal.fa?.id_fa || null  // Ajout de cette ligne
           }));
           console.log('Processed animals:', animalsWithId); // Pour debug
           setAnimals(animalsWithId);
@@ -176,7 +315,7 @@ function Refuge() {
         <Navbar />
       </div>
       <div className="flex-grow flex flex-col md:pl-64 relative z-0">
-        <main className="flex-grow p-8">
+        <main className="flex-grow p-4">
           {isMainPage && (
             <AnimalTable 
               animals={filteredAnimals} 
