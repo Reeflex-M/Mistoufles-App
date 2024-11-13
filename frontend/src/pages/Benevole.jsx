@@ -23,8 +23,26 @@ const BenevoleTable = ({ fas, onRowUpdate }) => {
       editable: true,
     },
     { 
+      field: 'nom_fa', 
+      headerName: 'Nom', 
+      width: 100,
+      editable: true,
+    },
+    { 
+      field: 'adresse_fa', 
+      headerName: 'Adresse', 
+      width: 200,
+      editable: true,
+    },
+    { 
       field: 'commune_fa', 
       headerName: 'Commune', 
+      width: 100,
+      editable: true,
+    },
+    { 
+      field: 'code_postal_fa', 
+      headerName: 'Code Postal', 
       width: 100,
       editable: true,
     },
@@ -32,6 +50,12 @@ const BenevoleTable = ({ fas, onRowUpdate }) => {
       field: 'telephone_fa', 
       headerName: 'Tél', 
       width: 130,
+      editable: true,
+    },
+    { 
+      field: 'email_fa', 
+      headerName: 'Email', 
+      width: 200,
       editable: true,
     },
     { 

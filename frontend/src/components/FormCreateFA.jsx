@@ -48,6 +48,7 @@ function FormCreateFA({ onClose }) {
 
       console.log("FA créé avec succès");
       alert("FA créé avec succès!");
+      window.location.reload(); // Ajoutez cette ligne pour rafraîchir la page
       onClose();
     } catch (error) {
       console.error("Erreur:", error);

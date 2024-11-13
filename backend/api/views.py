@@ -11,6 +11,7 @@ from .models import Animal, FA, Statut, Provenance, Sexe, Categorie
 class AnimalListCreate(generics.ListCreateAPIView):
     serializer_class = AnimalSerializer
     permission_classes = [IsAuthenticated]
+    queryset = Animal.objects.all()
     
     #Return All animal
     def get_queryset(self):
