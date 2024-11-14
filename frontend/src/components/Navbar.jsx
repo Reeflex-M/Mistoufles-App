@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import {
   FaPaw,
-  FaCat,
   FaUserFriends,
   FaPlus,
   FaUserCircle,
@@ -115,14 +114,12 @@ const Navbar = () => {
     switch (item) {
       case "refuge":
         return 0;
-      case "chatterie":
-        return 64;
       case "benevole":
-        return 128;
+        return 64; // Modifier cette valeur car on supprime chatterie
       case "stats":
-        return 208;
+        return 144; // Ajuster cette valeur
       case "archive":
-        return 272; // Nouvelle position pour l'archive
+        return 208; // Ajuster cette valeur
       default:
         return 0;
     }
@@ -208,20 +205,6 @@ const Navbar = () => {
           </li>
           <li>
             <Link
-              to="/chatterie"
-              className={`block w-full h-[48px] rounded-lg relative ${
-                activeItem === "chatterie" ? "text-purple-600" : "text-gray-600"
-              }`}
-              onClick={() => setActiveItem("chatterie")}
-            >
-              <div className="flex items-center h-full px-4">
-                <FaCat className="text-xl w-[20px]" />
-                <span className="ml-3">Chatterie</span>
-              </div>
-            </Link>
-          </li>
-          <li>
-            <Link
               to="/benevole"
               className={`block w-full h-[48px] rounded-lg relative ${
                 activeItem === "benevole" ? "text-purple-600" : "text-gray-600"
@@ -285,51 +268,56 @@ const Navbar = () => {
             </button>
           </div>
         </div>
+      </nav>
 
-        {showAnimalForm && (
+      {/* Déplacé les modales ici, en dehors de la nav */}
+      {showAnimalForm && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[9999]"
+          onClick={handleClickOutside}
+        >
           <div
-            className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
-            onClick={handleClickOutside}
+            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl h-[90vh] relative popup-content"
+            onClick={preventClose}
           >
-            <div
-              className="bg-white rounded-lg shadow-xl p-6 w-full max-w-3xl relative z-50 popup-content"
-              onClick={preventClose}
+            <button
+              onClick={toggleAnimalForm}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-900 transition duration-300 text-2xl"
             >
-              <button
-                onClick={toggleAnimalForm}
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 transition duration-300"
-              >
-                &times;
-              </button>
-              <div className="max-h-[90vh] overflow-y-auto">
+              ✕
+            </button>
+            <div className="h-full overflow-y-auto pr-3">
+              <div className="overflow-visible">
                 <FormCreateAnimal onClose={toggleAnimalForm} />
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {showFAForm && (
+      {showFAForm && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[9999]"
+          onClick={handleClickOutside}
+        >
           <div
-            className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
-            onClick={handleClickOutside}
+            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl h-[90vh] relative popup-content"
+            onClick={preventClose}
           >
-            <div
-              className="bg-white rounded-lg shadow-xl p-6 w-full max-w-3xl relative z-50 popup-content"
-              onClick={preventClose}
+            <button
+              onClick={toggleFAForm}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-900 transition duration-300 text-2xl"
             >
-              <button
-                onClick={toggleFAForm}
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 transition duration-300"
-              >
-                &times;
-              </button>
-              <div className="max-h-[90vh] overflow-y-auto">
+              ✕
+            </button>
+            <div className="h-full overflow-y-auto pr-3">
+              <div className="overflow-visible">
                 <FormCreateFA onClose={toggleFAForm} />
               </div>
             </div>
           </div>
-        )}
-      </nav>
+        </div>
+      )}
 
       {/* Ajout d'un padding pour le contenu principal */}
       <div className="md:ml-56">

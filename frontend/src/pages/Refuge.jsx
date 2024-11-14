@@ -128,8 +128,9 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
 
   const handleFaClick = async (faId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/fa/${faId}/`, {
-        method: "GET",
+      const response = await fetch(`http://127.0.0.1:8000/api/fa/`, {
+        // Modifié l'URL
+        method: "GET", // Retour à GET
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -138,9 +139,12 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
         credentials: "include",
       });
       if (response.ok) {
-        const faData = await response.json();
-        setSelectedFa(faData);
-        setFaDialogOpen(true);
+        const faDataList = await response.json();
+        const faData = faDataList.find((fa) => fa.id_fa === faId); // Chercher la FA spécifique
+        if (faData) {
+          setSelectedFa(faData);
+          setFaDialogOpen(true);
+        }
       }
     } catch (error) {
       console.error("Erreur lors de la récupération des données FA:", error);
@@ -214,42 +218,78 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
       headerName: "Statut",
       flex: 0.8,
       minWidth: 90,
-      renderCell: (params) => (
-        <Select
-          value={params.row.statut_libelle || ""}
-          size="small"
-          sx={{
-            fontSize: "0.75rem",
-            height: "25px",
-            width: "100%",
-            "& .MuiSelect-select": {
-              padding: "2px 8px",
-            },
-          }}
-          onChange={(e) => {
-            const selectedStatut = statuts.find(
-              (s) => s.libelle_statut === e.target.value
-            );
-            const updatedRow = {
-              ...params.row,
-              statut: selectedStatut,
-              statut_libelle: e.target.value,
-            };
-            params.api.updateRows([updatedRow]); // Met à jour visuellement la grille immédiatement
-            onRowUpdate(updatedRow, params.row);
-          }}
-        >
-          {statuts.map((statut) => (
-            <MenuItem
-              key={statut.id_statut}
-              value={statut.libelle_statut}
-              sx={{ fontSize: "0.75rem" }}
-            >
-              {statut.libelle_statut}
+      renderCell: (params) => {
+        // Récupérer le statut actuel de l'animal
+        const currentStatut = params.row.statut_libelle || "";
+
+        return (
+          <Select
+            value={currentStatut}
+            size="small"
+            sx={{
+              fontSize: "0.875rem",
+              height: "28px",
+              width: "100%",
+              backgroundColor: "white",
+              "& .MuiSelect-select": {
+                padding: "4px 8px",
+                fontWeight: "600",
+                color: "#374151",
+                display: "block",
+                textAlign: "center",
+              },
+              "&:hover": {
+                backgroundColor: "#f3f4f6",
+              },
+              "& .MuiOutlinedInput-notchedOutline": {
+                border: "1px solid #d1d5db",
+              },
+            }}
+            onChange={(e) => {
+              const selectedStatut = statuts.find(
+                (s) => s.libelle_statut === e.target.value
+              );
+              const updatedRow = {
+                ...params.row,
+                statut: selectedStatut,
+                statut_libelle: e.target.value,
+              };
+              params.api.updateRows([updatedRow]);
+              onRowUpdate(updatedRow, params.row);
+            }}
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  maxHeight: 200,
+                },
+              },
+            }}
+          >
+            <MenuItem value="" disabled>
+              Sélectionner un statut
             </MenuItem>
-          ))}
-        </Select>
-      ),
+            {statuts.map((statut) => (
+              <MenuItem
+                key={statut.id_statut}
+                value={statut.libelle_statut}
+                selected={currentStatut === statut.libelle_statut}
+                sx={{
+                  fontSize: "0.875rem",
+                  "&.Mui-selected": {
+                    backgroundColor: "#e5e7eb",
+                    fontWeight: "600",
+                  },
+                  "&:hover": {
+                    backgroundColor: "#f3f4f6",
+                  },
+                }}
+              >
+                {statut.libelle_statut}
+              </MenuItem>
+            ))}
+          </Select>
+        );
+      },
     },
     {
       field: "provenance_libelle",
@@ -379,7 +419,8 @@ function Refuge() {
           const animalsWithId = data.map((animal) => ({
             ...animal,
             id: animal.id_animal,
-            statut_libelle: animal.statut?.libelle_statut || "",
+            statut_libelle:
+              animal.statut_libelle || animal.statut?.libelle_statut || "",
             provenance_libelle: animal.provenance?.libelle_provenance || "",
             categorie_libelle: animal.categorie?.libelle_categorie || "",
             sexe_libelle: animal.sexe?.libelle_sexe || "",
@@ -404,8 +445,6 @@ function Refuge() {
 
   const handleRowUpdate = async (newRow, oldRow) => {
     try {
-      console.log("Mise à jour:", newRow); // Debug
-
       const response = await fetch(
         `http://127.0.0.1:8000/api/animal/${newRow.id}/`,
         {
@@ -414,7 +453,6 @@ function Refuge() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
-          // Envoyer seulement l'ID du statut
           body: JSON.stringify({
             statut: newRow.statut.id_statut,
           }),
@@ -423,21 +461,24 @@ function Refuge() {
 
       if (response.ok) {
         const updatedAnimal = await response.json();
-        console.log("Réponse API:", updatedAnimal); // Debug
+        console.log("Réponse API:", updatedAnimal);
 
-        // Mettre à jour l'état local avec les nouvelles données
+        // Créer un nouvel objet avec toutes les propriétés de l'ancienne ligne
+        const updatedRow = {
+          ...oldRow,
+          statut: {
+            id_statut: updatedAnimal.statut,
+            libelle_statut: updatedAnimal.statut_libelle,
+          },
+          statut_libelle: updatedAnimal.statut_libelle,
+        };
+
+        // Mettre à jour l'état avec le nouvel objet
         setFilteredAnimals((prev) =>
-          prev.map((row) =>
-            row.id === newRow.id
-              ? {
-                  ...row,
-                  statut: updatedAnimal.statut,
-                  statut_libelle: updatedAnimal.statut?.libelle_statut,
-                }
-              : row
-          )
+          prev.map((row) => (row.id === newRow.id ? updatedRow : row))
         );
-        return newRow;
+
+        return updatedRow;
       } else {
         throw new Error("Échec de la mise à jour");
       }

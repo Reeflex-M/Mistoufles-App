@@ -45,12 +45,27 @@ class FASerializer(serializers.ModelSerializer):
         
 
 class AnimalSerializer(serializers.ModelSerializer):
-    statut = StatutSerializer(read_only=True)
-    provenance = ProvenanceSerializer(read_only=True)
-    categorie = CategorieSerializer(read_only=True)
-    sexe = SexeSerializer(read_only=True)
-    fa = FASerializer(read_only=True)
+    statut_libelle = serializers.SerializerMethodField()
+    provenance_libelle = serializers.SerializerMethodField()
+    categorie_libelle = serializers.SerializerMethodField()
+    sexe_libelle = serializers.SerializerMethodField()
+    fa_libelle = serializers.SerializerMethodField()
 
     class Meta:
         model = Animal
         fields = '__all__'
+
+    def get_statut_libelle(self, obj):
+        return obj.statut.libelle_statut if obj.statut else None
+
+    def get_provenance_libelle(self, obj):
+        return obj.provenance.libelle_provenance if obj.provenance else None
+
+    def get_categorie_libelle(self, obj):
+        return obj.categorie.libelle_categorie if obj.categorie else None
+
+    def get_sexe_libelle(self, obj):
+        return obj.sexe.libelle_sexe if obj.sexe else None
+
+    def get_fa_libelle(self, obj):
+        return obj.fa.prenom_fa if obj.fa else None

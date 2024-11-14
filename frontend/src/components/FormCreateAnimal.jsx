@@ -254,12 +254,14 @@ function FormCreateAnimal({ onClose }) {
       sterilise: sterilise ? 1 : 0,
       biberonnage: biberonnage ? 1 : 0,
       note: note || "",
-      statut: parseInt(statut) || null,
-      provenance: parseInt(provenance) || null,
-      categorie: parseInt(categorie) || null,
-      sexe: parseInt(sexe) || null,
-      fa: selectedFaId, // Utiliser l'ID au lieu du prénom
+      statut: statut ? parseInt(statut) : null,
+      provenance: provenance ? parseInt(provenance) : null,
+      categorie: categorie ? parseInt(categorie) : null,
+      sexe: sexe ? parseInt(sexe) : null,
+      fa: selectedFaId ? parseInt(selectedFaId) : null,
     };
+
+    console.log("Données envoyées:", animalData); // Pour le débogage
 
     try {
       const response = await fetch("http://127.0.0.1:8000/api/animal/create/", {
@@ -272,32 +274,15 @@ function FormCreateAnimal({ onClose }) {
       });
 
       const data = await response.json();
-      console.log("Réponse reçue:", data);
+      console.log("Réponse de l'API:", data); // Pour le débogage
 
       if (!response.ok) {
-        let errorMessage = "Erreur lors de la création de l'animal";
-
-        // Gestion spécifique des différentes erreurs
-        if (data.date_naissance) {
-          errorMessage = `Erreur de date de naissance: ${data.date_naissance.join(
-            ", "
-          )}`;
+        let errorMessage = "Erreur lors de la création de l'animal: ";
+        if (typeof data === "object") {
+          Object.entries(data).forEach(([key, value]) => {
+            errorMessage += `${key}: ${value.join(", ")}; `;
+          });
         }
-        if (data.num_identification) {
-          if (
-            data.num_identification.includes(
-              "animal with this num identification already exists"
-            )
-          ) {
-            errorMessage =
-              "Ce numéro d'identification existe déjà dans la base de données.";
-          } else {
-            errorMessage = `Erreur de numéro d'identification: ${data.num_identification.join(
-              ", "
-            )}`;
-          }
-        }
-
         alert(errorMessage);
         return;
       }
@@ -311,8 +296,10 @@ function FormCreateAnimal({ onClose }) {
   };
 
   return (
-    <div className="max-h-[90vh] overflow-y-auto">
-      <form onSubmit={handleSubmit} className="space-y-6 p-4">
+    <div className="w-full">
+      {" "}
+      {/* Retirez toute classe overflow ou scroll */}
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* Informations générales */}
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">

@@ -15,13 +15,20 @@ class AnimalListCreate(generics.ListCreateAPIView):
     
     #Return all animal
     def get_queryset(self):
-        return Animal.objects.all()
+        queryset = Animal.objects.select_related('statut').all()
+        return queryset.prefetch_related('provenance', 'categorie', 'sexe', 'fa')
     
-    def perform_create_animal(self, serializer):
+    def create(self, request, *args, **kwargs):
+        print("Données reçues:", request.data)  # Debug
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=self.request.user)
-        else:
-            print(serializer.errors)
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print("Erreurs de validation:", serializer.errors)  # Debug
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_create(self, serializer):
+        serializer.save()
 
 class AnimalDelete(generics.DestroyAPIView):
     queryset = Animal.objects.all()
@@ -37,19 +44,22 @@ class AnimalUpdate(generics.UpdateAPIView):
 
     def patch(self, request, *args, **kwargs):
         instance = self.get_object()
-        print("Données reçues:", request.data)  # Debug
+        print("Données reçues pour mise à jour:", request.data)
 
-        #si on recoit id de statut
-        if 'statut' in request.data and request.data['statut']:
+        if 'statut' in request.data:
             try:
                 statut = Statut.objects.get(id_statut=request.data['statut'])
                 instance.statut = statut
                 instance.save()
+                return Response({
+                    'id': instance.id_animal,
+                    'statut': statut.id_statut,
+                    'statut_libelle': statut.libelle_statut
+                })
             except Statut.DoesNotExist:
                 return Response({"error": "Statut non trouvé"}, status=400)
 
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        return Response({"error": "Aucune mise à jour effectuée"}, status=400)
 
 class AnimalArchiveList(generics.ListAPIView):
     serializer_class = AnimalSerializer

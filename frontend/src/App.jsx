@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Refuge from "./pages/Refuge";
-import Chatterie from "./pages/Chatterie";
 import Benevole from "./pages/Benevole";
 import Stats from "./pages/Stats";
 import NotFound from "./pages/NotFound";
@@ -32,14 +31,6 @@ function App() {
           element={
             <ProtectedRoute>
               <Refuge />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/chatterie"
-          element={
-            <ProtectedRoute>
-              <Chatterie />
             </ProtectedRoute>
           }
         />
