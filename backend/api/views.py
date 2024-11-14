@@ -13,7 +13,7 @@ class AnimalListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Animal.objects.all()
     
-    #Return All animal
+    #Return all animal
     def get_queryset(self):
         return Animal.objects.all()
     
@@ -28,6 +28,29 @@ class AnimalDelete(generics.DestroyAPIView):
     serializer_class = AnimalSerializer
     permission_classes = [IsAuthenticated]
 
+#animal update
+class AnimalUpdate(generics.UpdateAPIView):
+    queryset = Animal.objects.all()
+    serializer_class = AnimalSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'  #utilise id animal comme parametre de recherche
+
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        print("Données reçues:", request.data)  # Debug
+
+        #si on recoit id de statut
+        if 'statut' in request.data and request.data['statut']:
+            try:
+                statut = Statut.objects.get(id_statut=request.data['statut'])
+                instance.statut = statut
+                instance.save()
+            except Statut.DoesNotExist:
+                return Response({"error": "Statut non trouvé"}, status=400)
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
 
 
 
@@ -37,13 +60,13 @@ class FAListCreate(generics.ListCreateAPIView):
     serializer_class = FASerializer
     permission_classes = [IsAuthenticated]
     
-    #Return All fa
+    #Return all fa
     def get_queryset(self):
         return FA.objects.all()
     
     # Correction du nom de la méthode
     def perform_create(self, serializer):  # Changé de perform_create_fa à perform_create
-        serializer.save()  # Supprimé user car pas nécessaire pour FA
+        serializer.save()  
 
 class FAUpdate(generics.UpdateAPIView):
     queryset = FA.objects.all()
@@ -62,7 +85,7 @@ class FADetail(generics.RetrieveAPIView):
     queryset = FA.objects.all()
     serializer_class = FASerializer
     permission_classes = [IsAuthenticated]
-    lookup_field = 'pk'  # Utilise l'ID de la FA comme paramètre de recherche
+    lookup_field = 'pk'  #utilise id fa comme parametre de recherche
 
 
 

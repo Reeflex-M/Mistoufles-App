@@ -25,7 +25,7 @@ function FormCreateAnimal({ onClose }) {
   const [showFaList, setShowFaList] = useState(false); // Nouvel état pour contrôler la visibilité
   const faInputRef = useRef(null); // Référence pour le conteneur de l'input FA
   const [sexes, setSexes] = useState([]); // Nouvel état pour stocker les sexes
-  const [provenances, setProvenances] = useState([]); 
+  const [provenances, setProvenances] = useState([]);
   const [statuts, setStatuts] = useState([]); // Ajout du state pour les statuts
   const [categories, setCategories] = useState([]); // Ajout du state pour les catégories
 
@@ -86,17 +86,25 @@ function FormCreateAnimal({ onClose }) {
 
     const fetchProvenances = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/animal/provenance/", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/animal/provenance/",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
         if (response.ok) {
           const data = await response.json();
           console.log("Données brutes des provenances:", data);
-          const provenanceArray = Array.isArray(data) ? data : Object.values(data);
-          console.log("Tableau des provenances après traitement:", provenanceArray);
+          const provenanceArray = Array.isArray(data)
+            ? data
+            : Object.values(data);
+          console.log(
+            "Tableau des provenances après traitement:",
+            provenanceArray
+          );
           setProvenances(provenanceArray); // Correction: utiliser setProvenances au lieu de setSexes
         } else {
           console.error("Erreur réponse API provenance:", response.status);
@@ -110,12 +118,15 @@ function FormCreateAnimal({ onClose }) {
 
     const fetchStatuts = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/animal/statut/", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/animal/statut/",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
         if (response.ok) {
           const data = await response.json();
           console.log("Données brutes des statuts:", data);
@@ -134,17 +145,25 @@ function FormCreateAnimal({ onClose }) {
 
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/animal/categorie/", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/animal/categorie/",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
         if (response.ok) {
           const data = await response.json();
           console.log("Données brutes des catégories:", data);
-          const categorieArray = Array.isArray(data) ? data : Object.values(data);
-          console.log("Tableau des catégories après traitement:", categorieArray);
+          const categorieArray = Array.isArray(data)
+            ? data
+            : Object.values(data);
+          console.log(
+            "Tableau des catégories après traitement:",
+            categorieArray
+          );
           setCategories(categorieArray);
         } else {
           console.error("Erreur réponse API categorie:", response.status);
@@ -170,8 +189,8 @@ function FormCreateAnimal({ onClose }) {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleFaChange = (e) => {
@@ -182,7 +201,8 @@ function FormCreateAnimal({ onClose }) {
     if (searchTerm.length > 0) {
       setFilteredFas(
         fas.filter((fa) => {
-          const prenomMatch = fa?.prenom_fa?.toLowerCase()?.includes(searchTerm) || false;
+          const prenomMatch =
+            fa?.prenom_fa?.toLowerCase()?.includes(searchTerm) || false;
           return prenomMatch;
         })
       );
@@ -199,7 +219,7 @@ function FormCreateAnimal({ onClose }) {
   };
 
   const handleFaClick = (f) => {
-    setFa(f?.prenom_fa || '');
+    setFa(f?.prenom_fa || "");
     setSelectedFaId(f?.id_fa); // Stocker l'ID du FA sélectionné
     setShowFaList(false);
     setFilteredFas([]);
@@ -212,7 +232,7 @@ function FormCreateAnimal({ onClose }) {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return null;
     // Retourne la date au format YYYY-MM-DD
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split("T")[0];
   };
 
   const handleSubmit = async (event) => {
@@ -256,19 +276,28 @@ function FormCreateAnimal({ onClose }) {
 
       if (!response.ok) {
         let errorMessage = "Erreur lors de la création de l'animal";
-        
+
         // Gestion spécifique des différentes erreurs
         if (data.date_naissance) {
-          errorMessage = `Erreur de date de naissance: ${data.date_naissance.join(", ")}`;
+          errorMessage = `Erreur de date de naissance: ${data.date_naissance.join(
+            ", "
+          )}`;
         }
         if (data.num_identification) {
-          if (data.num_identification.includes("animal with this num identification already exists")) {
-            errorMessage = "Ce numéro d'identification existe déjà dans la base de données.";
+          if (
+            data.num_identification.includes(
+              "animal with this num identification already exists"
+            )
+          ) {
+            errorMessage =
+              "Ce numéro d'identification existe déjà dans la base de données.";
           } else {
-            errorMessage = `Erreur de numéro d'identification: ${data.num_identification.join(", ")}`;
+            errorMessage = `Erreur de numéro d'identification: ${data.num_identification.join(
+              ", "
+            )}`;
           }
         }
-        
+
         alert(errorMessage);
         return;
       }
@@ -454,11 +483,15 @@ function FormCreateAnimal({ onClose }) {
                         className="p-3 hover:bg-gray-100 cursor-pointer transition-colors duration-150"
                         onClick={() => handleFaClick(f)}
                       >
-                        <div className="font-medium">{f?.prenom_fa || 'Sans prénom'}</div>
+                        <div className="font-medium">
+                          {f?.prenom_fa || "Sans prénom"}
+                        </div>
                         <div className="text-sm text-gray-600">
                           {f?.commune_fa && <span>{f.commune_fa}</span>}
                           {f?.libelle_reseausociaux && (
-                            <span className="ml-2">• {f.libelle_reseausociaux}</span>
+                            <span className="ml-2">
+                              • {f.libelle_reseausociaux}
+                            </span>
                           )}
                         </div>
                       </div>
@@ -483,15 +516,22 @@ function FormCreateAnimal({ onClose }) {
                 }}
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option key="default-select" value="">Sélectionner le sexe</option>
+                <option key="default-select" value="">
+                  Sélectionner le sexe
+                </option>
                 {sexes && sexes.length > 0 ? (
                   sexes.map((s) => (
-                    <option key={`sexe-${s.id_sexe || s.id}`} value={s.id_sexe || s.id}>
-                      {s.libelle_sexe || s.libelle || 'Sans libellé'}
+                    <option
+                      key={`sexe-${s.id_sexe || s.id}`}
+                      value={s.id_sexe || s.id}
+                    >
+                      {s.libelle_sexe || s.libelle || "Sans libellé"}
                     </option>
                   ))
                 ) : (
-                  <option value="" disabled>Chargement des sexes...</option>
+                  <option value="" disabled>
+                    Chargement des sexes...
+                  </option>
                 )}
               </select>
             </div>
@@ -511,12 +551,17 @@ function FormCreateAnimal({ onClose }) {
                 <option value="">Sélectionner la provenance</option>
                 {provenances && provenances.length > 0 ? (
                   provenances.map((p) => (
-                    <option key={`provenance-${p.id_provenance || p.id}`} value={p.id_provenance || p.id}>
-                      {p.libelle_provenance || p.libelle || 'Sans libellé'}
+                    <option
+                      key={`provenance-${p.id_provenance || p.id}`}
+                      value={p.id_provenance || p.id}
+                    >
+                      {p.libelle_provenance || p.libelle || "Sans libellé"}
                     </option>
                   ))
                 ) : (
-                  <option value="" disabled>Chargement des provenances...</option>
+                  <option value="" disabled>
+                    Chargement des provenances...
+                  </option>
                 )}
               </select>
             </div>
@@ -536,12 +581,17 @@ function FormCreateAnimal({ onClose }) {
                 <option value="">Sélectionner le statut</option>
                 {statuts && statuts.length > 0 ? (
                   statuts.map((s) => (
-                    <option key={`statut-${s.id_statut || s.id}`} value={s.id_statut || s.id}>
-                      {s.libelle_statut || s.libelle || 'Sans libellé'}
+                    <option
+                      key={`statut-${s.id_statut || s.id}`}
+                      value={s.id_statut || s.id}
+                    >
+                      {s.libelle_statut || s.libelle || "Sans libellé"}
                     </option>
                   ))
                 ) : (
-                  <option value="" disabled>Chargement des statuts...</option>
+                  <option value="" disabled>
+                    Chargement des statuts...
+                  </option>
                 )}
               </select>
             </div>
@@ -561,12 +611,17 @@ function FormCreateAnimal({ onClose }) {
                 <option value="">Sélectionner la catégorie</option>
                 {categories && categories.length > 0 ? (
                   categories.map((c) => (
-                    <option key={`categorie-${c.id_categorie || c.id}`} value={c.id_categorie || c.id}>
-                      {c.libelle_categorie || c.libelle || 'Sans libellé'}
+                    <option
+                      key={`categorie-${c.id_categorie || c.id}`}
+                      value={c.id_categorie || c.id}
+                    >
+                      {c.libelle_categorie || c.libelle || "Sans libellé"}
                     </option>
                   ))
                 ) : (
-                  <option value="" disabled>Chargement des catégories...</option>
+                  <option value="" disabled>
+                    Chargement des catégories...
+                  </option>
                 )}
               </select>
             </div>

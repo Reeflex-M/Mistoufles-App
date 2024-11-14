@@ -42,7 +42,6 @@ class FA(models.Model):
     def __str__(self):
         return self.prenom_fa
     
-    
 
 class Categorie(models.Model):
     id_categorie = models.AutoField(primary_key=True)
@@ -74,7 +73,7 @@ class Archive(models.Model):
     rappel_vacc = models.DateField(null=True, blank=True)
     vermifuge = models.DateField(null=True, blank=True)
     antipuce = models.DateField(null=True, blank=True)
-    sterilise = models.DateField(null=True, blank=True)
+    sterilise = models.BooleanField(default=False, null=True, blank=True)
     note = models.TextField(null=True, blank=True)
     statut = models.ForeignKey('Statut', on_delete=models.SET_NULL, null=True, blank=True)
     provenance = models.ForeignKey('Provenance', on_delete=models.SET_NULL, null=True, blank=True)
