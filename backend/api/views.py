@@ -51,6 +51,11 @@ class AnimalUpdate(generics.UpdateAPIView):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
+class AnimalArchiveList(generics.ListAPIView):
+    serializer_class = AnimalSerializer
+    
+    def get_queryset(self):
+        return Animal.objects.filter(archive=True)
 
 
 
@@ -75,6 +80,16 @@ class FAUpdate(generics.UpdateAPIView):
 
     def patch(self, request, *args, **kwargs):
         instance = self.get_object()
+        print("Données reçues pour mise à jour FA:", request.data)  # Debug
+
+        # Mise à jour spécifique pour la note
+        if 'note' in request.data:
+            instance.note = request.data['note']
+            instance.save()
+            print("Note mise à jour:", instance.note)  # Debug
+            return Response({'note': instance.note})
+
+        # Pour les autres champs
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()

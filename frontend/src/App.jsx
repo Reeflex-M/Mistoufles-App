@@ -7,6 +7,7 @@ import Benevole from "./pages/Benevole";
 import Stats from "./pages/Stats";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoutes";
+import Archive from "./pages/Archive";
 import "./index.css";
 
 const Logout = () => {
@@ -60,6 +61,14 @@ function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
+        <Route
+          path="/archive"
+          element={
+            <ProtectedRoute>
+              <Archive />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

@@ -10,9 +10,10 @@ urlpatterns = [
     path("fa/", views.FAListCreate.as_view(), name="fa-list"),
     path("fa/create/", views.FAListCreate.as_view(), name="fa-create"),
     path("fa/test/", views.FAListCreate.as_view(), name="fa-test"),
-    path("fa/<int:pk>/", views.FADetail.as_view(), name="fa-detail"),
+    path("fa/<int:pk>/", views.FAUpdate.as_view(), name="fa-update"),  # Modifier cette ligne
     path('animal/statut/', StatutList.as_view(), name='statut-list'),
     path('animal/provenance/', ProvenanceList.as_view(), name='provenance-list'),
     path('animal/sexe/', SexeList.as_view(), name='sexe-list'),
     path('animal/categorie/', CategorieList.as_view(), name='categorie-list'),
+    path('animal/archive/', views.AnimalArchiveList.as_view(), name='animal-archive'),
 ]
