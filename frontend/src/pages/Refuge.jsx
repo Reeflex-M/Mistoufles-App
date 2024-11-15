@@ -219,8 +219,9 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
       flex: 0.8,
       minWidth: 90,
       renderCell: (params) => {
-        // Récupérer le statut actuel de l'animal
-        const currentStatut = params.row.statut_libelle || "";
+        // Modifier cette partie pour utiliser directement le libelle du statut
+        const currentStatut =
+          params.row.statut?.libelle_statut || params.row.statut_libelle || "";
 
         return (
           <Select
@@ -252,7 +253,7 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
               const updatedRow = {
                 ...params.row,
                 statut: selectedStatut,
-                statut_libelle: e.target.value,
+                statut_libelle: selectedStatut.libelle_statut,
               };
               params.api.updateRows([updatedRow]);
               onRowUpdate(updatedRow, params.row);
@@ -415,19 +416,27 @@ function Refuge() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Data received:", data); // Pour debug
-          const animalsWithId = data.map((animal) => ({
-            ...animal,
-            id: animal.id_animal,
-            statut_libelle:
-              animal.statut_libelle || animal.statut?.libelle_statut || "",
-            provenance_libelle: animal.provenance?.libelle_provenance || "",
-            categorie_libelle: animal.categorie?.libelle_categorie || "",
-            sexe_libelle: animal.sexe?.libelle_sexe || "",
-            fa_libelle: animal.fa?.prenom_fa || "",
-            id_fa: animal.fa?.id_fa || null, // Ajout de cette ligne
-          }));
-          console.log("Processed animals:", animalsWithId); // Pour debug
+          console.log("Données brutes reçues:", data); // Debug
+
+          const animalsWithId = data.map((animal) => {
+            console.log("FA data for animal:", animal.fa); // Debug
+            return {
+              ...animal,
+              id: animal.id_animal,
+              statut_libelle: animal.statut?.libelle_statut || "",
+              statut: {
+                id_statut: animal.statut?.id_statut,
+                libelle_statut: animal.statut?.libelle_statut,
+              },
+              provenance_libelle: animal.provenance?.libelle_provenance || "",
+              categorie_libelle: animal.categorie?.libelle_categorie || "",
+              sexe_libelle: animal.sexe?.libelle_sexe || "",
+              fa_libelle: animal.fa?.prenom_fa || "",
+              id_fa: animal.fa?.id_fa || null,
+            };
+          });
+
+          console.log("Données transformées:", animalsWithId); // Debug
           setAnimals(animalsWithId);
           setFilteredAnimals(animalsWithId);
         } else {

@@ -45,6 +45,8 @@ class FASerializer(serializers.ModelSerializer):
         
 
 class AnimalSerializer(serializers.ModelSerializer):
+    fa = FASerializer(read_only=True)  # Ajout de cette ligne
+    statut = StatutSerializer(read_only=True)  # Ajout de cette ligne
     statut_libelle = serializers.SerializerMethodField()
     provenance_libelle = serializers.SerializerMethodField()
     categorie_libelle = serializers.SerializerMethodField()
@@ -69,3 +71,29 @@ class AnimalSerializer(serializers.ModelSerializer):
 
     def get_fa_libelle(self, obj):
         return obj.fa.prenom_fa if obj.fa else None
+
+    def create(self, validated_data):
+        # Récupérer les IDs des relations
+        statut_id = self.initial_data.get('statut')
+        fa_id = self.initial_data.get('fa')
+        
+        # Créer l'animal sans les relations
+        animal = Animal.objects.create(**validated_data)
+        
+        # Ajouter les relations si elles existent
+        if statut_id:
+            try:
+                statut = Statut.objects.get(id_statut=statut_id)
+                animal.statut = statut
+            except Statut.DoesNotExist:
+                pass
+
+        if fa_id:
+            try:
+                fa = FA.objects.get(id_fa=fa_id)
+                animal.fa = fa
+            except FA.DoesNotExist:
+                pass
+
+        animal.save()
+        return animal

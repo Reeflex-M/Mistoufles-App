@@ -15,15 +15,17 @@ class AnimalListCreate(generics.ListCreateAPIView):
     
     #Return all animal
     def get_queryset(self):
-        queryset = Animal.objects.select_related('statut').all()
-        return queryset.prefetch_related('provenance', 'categorie', 'sexe', 'fa')
+        queryset = Animal.objects.select_related('statut', 'fa').all()
+        return queryset.prefetch_related('provenance', 'categorie', 'sexe')
     
     def create(self, request, *args, **kwargs):
         print("Données reçues:", request.data)  # Debug
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            self.perform_create(serializer)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            animal = serializer.save()
+            # Récupérer l'animal avec toutes ses relations
+            updated_serializer = self.get_serializer(animal)
+            return Response(updated_serializer.data, status=status.HTTP_201_CREATED)
         print("Erreurs de validation:", serializer.errors)  # Debug
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -51,9 +53,13 @@ class AnimalUpdate(generics.UpdateAPIView):
                 statut = Statut.objects.get(id_statut=request.data['statut'])
                 instance.statut = statut
                 instance.save()
+                # Retourner l'objet complet avec toutes les données du statut
                 return Response({
                     'id': instance.id_animal,
-                    'statut': statut.id_statut,
+                    'statut': {
+                        'id_statut': statut.id_statut,
+                        'libelle_statut': statut.libelle_statut
+                    },
                     'statut_libelle': statut.libelle_statut
                 })
             except Statut.DoesNotExist:
