@@ -47,6 +47,9 @@ class FASerializer(serializers.ModelSerializer):
 class AnimalSerializer(serializers.ModelSerializer):
     fa = FASerializer(read_only=True)  # Ajout de cette ligne
     statut = StatutSerializer(read_only=True)  # Ajout de cette ligne
+    provenance = ProvenanceSerializer(read_only=True)  # Ajout
+    categorie = CategorieSerializer(read_only=True)    # Ajout
+    sexe = SexeSerializer(read_only=True)             # Ajout
     statut_libelle = serializers.SerializerMethodField()
     provenance_libelle = serializers.SerializerMethodField()
     categorie_libelle = serializers.SerializerMethodField()
@@ -76,6 +79,9 @@ class AnimalSerializer(serializers.ModelSerializer):
         # Récupérer les IDs des relations
         statut_id = self.initial_data.get('statut')
         fa_id = self.initial_data.get('fa')
+        provenance_id = self.initial_data.get('provenance')  # Ajout
+        categorie_id = self.initial_data.get('categorie')    # Ajout
+        sexe_id = self.initial_data.get('sexe')             # Ajout
         
         # Créer l'animal sans les relations
         animal = Animal.objects.create(**validated_data)
@@ -83,16 +89,32 @@ class AnimalSerializer(serializers.ModelSerializer):
         # Ajouter les relations si elles existent
         if statut_id:
             try:
-                statut = Statut.objects.get(id_statut=statut_id)
-                animal.statut = statut
+                animal.statut = Statut.objects.get(id_statut=statut_id)
             except Statut.DoesNotExist:
                 pass
 
         if fa_id:
             try:
-                fa = FA.objects.get(id_fa=fa_id)
-                animal.fa = fa
+                animal.fa = FA.objects.get(id_fa=fa_id)
             except FA.DoesNotExist:
+                pass
+
+        if provenance_id:  # Ajout
+            try:
+                animal.provenance = Provenance.objects.get(id_provenance=provenance_id)
+            except Provenance.DoesNotExist:
+                pass
+
+        if categorie_id:  # Ajout
+            try:
+                animal.categorie = Categorie.objects.get(id_categorie=categorie_id)
+            except Categorie.DoesNotExist:
+                pass
+
+        if sexe_id:  # Ajout
+            try:
+                animal.sexe = Sexe.objects.get(id_sexe=sexe_id)
+            except Sexe.DoesNotExist:
                 pass
 
         animal.save()
