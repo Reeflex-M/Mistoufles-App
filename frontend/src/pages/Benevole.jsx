@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import { DataGrid } from "@mui/x-data-grid";
 import { ACCESS_TOKEN } from "../constants";
 import axios from "axios";
+import PropTypes from "prop-types";
 
 // Nouveau composant NoteDialog
 const NoteDialog = ({ isOpen, onClose, note, onSave }) => {
@@ -47,6 +48,17 @@ const NoteDialog = ({ isOpen, onClose, note, onSave }) => {
       </div>
     </div>
   );
+};
+
+NoteDialog.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  note: PropTypes.string,
+  onSave: PropTypes.func.isRequired,
+};
+
+NoteDialog.defaultProps = {
+  note: "",
 };
 
 const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
@@ -230,8 +242,30 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
   );
 };
 
+BenevoleTable.propTypes = {
+  fas: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      prenom_fa: PropTypes.string,
+      nom_fa: PropTypes.string,
+      adresse_fa: PropTypes.string,
+      commune_fa: PropTypes.string,
+      code_postal_fa: PropTypes.string,
+      telephone_fa: PropTypes.string,
+      email_fa: PropTypes.string,
+      libelle_reseausociaux: PropTypes.string,
+      libelle_veterinaire: PropTypes.string,
+      note: PropTypes.string,
+    })
+  ).isRequired,
+  onRowUpdate: PropTypes.func.isRequired,
+  setFilteredFas: PropTypes.func.isRequired,
+};
+
 function Benevole() {
-  const [fas, setFas] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [fas, setFas] = useState([]); // useful for tabs
+
   const [filteredFas, setFilteredFas] = useState([]);
   const accessToken = localStorage.getItem(ACCESS_TOKEN);
   const location = useLocation();
@@ -254,12 +288,8 @@ function Benevole() {
           credentials: "include",
         });
 
-        console.log("Token utilisé:", accessToken);
-        console.log("Réponse reçue:", response);
-
         if (response.ok) {
           const data = await response.json();
-          console.log("FA bien lu", data);
           const fasWithId = data.map((fa) => ({
             ...fa,
             id: fa.id_fa,
@@ -267,8 +297,6 @@ function Benevole() {
           setFas(fasWithId);
           setFilteredFas(fasWithId);
         } else {
-          console.log("Statut de la réponse:", response.status);
-          console.log("Headers de la réponse:", response.headers);
           throw new Error(`Réponse non OK: ${response.status}`);
         }
       } catch (error) {
@@ -295,6 +323,7 @@ function Benevole() {
       );
 
       if (response.ok) {
+        // eslint-disable-next-line no-unused-vars
         const updatedData = await response.json();
         setFilteredFas((prev) =>
           prev.map((row) => (row.id === newRow.id ? { ...newRow } : row))

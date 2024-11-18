@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Animal, Statut, FA, Provenance, Sexe, Categorie
 
+#User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -11,27 +12,31 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
-    
+#Statut
 class StatutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statut
         fields = ['id_statut', 'libelle_statut']
 
+#Provenance
 class ProvenanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Provenance
         fields = ['id_provenance', 'libelle_provenance']
 
+#Categorie
 class CategorieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categorie
         fields = ['id_categorie', 'libelle_categorie']
 
+#Sexe
 class SexeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sexe
         fields = ['id_sexe', 'libelle_sexe']
 
+#FA
 class FASerializer(serializers.ModelSerializer):
     class Meta:
         model = FA
@@ -43,7 +48,7 @@ class FASerializer(serializers.ModelSerializer):
                   "libelle_veterinaire",
                   "note"]
         
-
+#Animal
 class AnimalSerializer(serializers.ModelSerializer):
     fa = FASerializer(read_only=True)  # Ajout de cette ligne
     statut = StatutSerializer(read_only=True)  # Ajout de cette ligne

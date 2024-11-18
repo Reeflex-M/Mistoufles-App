@@ -12,7 +12,7 @@ function FormCreateFA({ onClose }) {
   const [error, setError] = useState(null);
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault(); // Empêche le rechargement de la page lors de la soumission du formulaire par defaut
 
     const accessToken = localStorage.getItem(ACCESS_TOKEN);
     if (!accessToken) {
@@ -46,7 +46,6 @@ function FormCreateFA({ onClose }) {
         throw new Error("Erreur lors de la création du FA");
       }
 
-      console.log("FA créé avec succès");
       alert("FA créé avec succès!");
       window.location.reload(); // Ajoutez cette ligne pour rafraîchir la page
       onClose();

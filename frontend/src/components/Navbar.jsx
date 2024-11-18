@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import {
+  // Gestion des icones
   FaPaw,
   FaUserFriends,
   FaPlus,
   FaUserCircle,
   FaSignOutAlt,
   FaChartBar,
-  FaArchive, // Ajout de l'icône d'archive
-  FaBars, // Ajout de l'icône du menu hamburger
+  FaArchive,
+  FaBars,
 } from "react-icons/fa";
 import { RiHome5Fill } from "react-icons/ri";
 import { ACCESS_TOKEN } from "../constants";
@@ -18,7 +19,7 @@ import FormCreateFA from "../components/FormCreateFA";
 const Navbar = () => {
   const location = useLocation();
   const [activeItem, setActiveItem] = useState(() => {
-    // Rend propre arriere plan violet
+    // Onglet active en violet
     const path = window.location.pathname.substring(1);
     return path || "refuge";
   });
@@ -31,7 +32,6 @@ const Navbar = () => {
 
   useEffect(() => {
     const accessToken = localStorage.getItem(ACCESS_TOKEN);
-    console.log("Access Token in useEffect:", accessToken); // Vérifiez le token dans useEffect
 
     const fetchCurrentUser = async () => {
       if (!accessToken) {
@@ -57,7 +57,6 @@ const Navbar = () => {
         }
         const data = await response.json();
         setCurrentUser(data);
-        console.log("Informations de l'utilisateur:", data);
       } catch (error) {
         console.error(
           "Erreur lors de la récupération des informations de l'utilisateur:",
@@ -115,11 +114,11 @@ const Navbar = () => {
       case "refuge":
         return 0;
       case "benevole":
-        return 64; // Modifier cette valeur car on supprime chatterie
+        return 64;
       case "stats":
-        return 144; // Ajuster cette valeur
+        return 144;
       case "archive":
-        return 208; // Ajuster cette valeur
+        return 208;
       default:
         return 0;
     }
