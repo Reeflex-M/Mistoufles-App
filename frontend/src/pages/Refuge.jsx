@@ -507,7 +507,6 @@ function Refuge() {
 
   const handleRowUpdate = async (newRow, oldRow) => {
     try {
-      // Créer un objet avec seulement les champs modifiés
       const changedFields = {};
       Object.keys(newRow).forEach((key) => {
         if (newRow[key] !== oldRow[key]) {
@@ -515,7 +514,6 @@ function Refuge() {
         }
       });
 
-      // Si le statut a changé, ajouter l'ID du statut
       if (newRow.statut?.id_statut !== oldRow.statut?.id_statut) {
         changedFields.statut = newRow.statut.id_statut;
       }
@@ -536,14 +534,18 @@ function Refuge() {
         const data = await response.json();
 
         // Si l'animal a été supprimé (adopté)
-        if (data.message === "Animal supprimé car adopté") {
+        if (data.message && data.message.includes("archivé")) {
+          // Mettre à jour immédiatement les deux états
+          setAnimals((prev) =>
+            prev.filter((animal) => animal.id !== newRow.id)
+          );
           setFilteredAnimals((prev) =>
-            prev.filter((row) => row.id !== newRow.id)
+            prev.filter((animal) => animal.id !== newRow.id)
           );
           return null;
         }
 
-        // Créer la ligne mise à jour avec les nouvelles données
+        // Pour les autres mises à jour
         const updatedRow = {
           ...newRow,
           ...data,
@@ -552,14 +554,17 @@ function Refuge() {
           statut_libelle: data.statut?.libelle_statut || newRow.statut_libelle,
         };
 
+        // Mettre à jour les deux états
+        setAnimals((prev) =>
+          prev.map((row) => (row.id === updatedRow.id ? updatedRow : row))
+        );
         setFilteredAnimals((prev) =>
-          prev.map((row) => (row.id === newRow.id ? updatedRow : row))
+          prev.map((row) => (row.id === updatedRow.id ? updatedRow : row))
         );
 
         return updatedRow;
-      } else {
-        throw new Error("Échec de la mise à jour");
       }
+      throw new Error("Échec de la mise à jour");
     } catch (error) {
       console.error("Erreur:", error);
       return oldRow;

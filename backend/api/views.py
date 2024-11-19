@@ -5,7 +5,7 @@ from .serializers import UserSerializer, AnimalSerializer, FASerializer, UserSer
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
-from .models import Animal, FA, Statut, Provenance, Sexe, Categorie
+from .models import Animal, FA, Statut, Provenance, Sexe, Categorie, Archive
 
 #ANIMAL
 class AnimalListCreate(generics.ListCreateAPIView):
@@ -64,11 +64,41 @@ class AnimalUpdate(generics.UpdateAPIView):
             try:
                 statut = Statut.objects.get(id_statut=request.data['statut'])
                 if statut.libelle_statut.lower() == "adopté":
-                    instance.delete()
-                    return Response({
-                        "message": "Animal supprimé car adopté"
-                    }, status=status.HTTP_200_OK)
-                
+                    try:
+                        # Créer une archive
+                        print(f"Tentative d'archivage pour l'animal: {instance.nom_animal}")
+                        archive = Archive.objects.create(
+                            nom_animal=instance.nom_animal,
+                            date_naissance=instance.date_naissance,
+                            num_identification=instance.num_identification,
+                            primo_vacc=instance.primo_vacc,
+                            rappel_vacc=instance.rappel_vacc,
+                            vermifuge=instance.vermifuge,
+                            antipuce=instance.antipuce,
+                            sterilise=instance.sterilise,
+                            note=instance.note,
+                            statut=statut,
+                            provenance=instance.provenance,
+                            categorie=instance.categorie,
+                            sexe=instance.sexe,
+                            fa=instance.fa
+                        )
+                        print(f"Archive créée avec succès, ID: {archive.id_animal}")
+                        
+                        # Forcer la suppression de l'instance
+                        Animal.objects.filter(pk=instance.pk).delete()
+                        print(f"Animal {instance.nom_animal} supprimé avec succès")
+                        
+                        return Response({
+                            "message": f"Animal {instance.nom_animal} archivé et supprimé avec succès"
+                        }, status=status.HTTP_200_OK)
+                    
+                    except Exception as e:
+                        print(f"Erreur lors de l'archivage/suppression: {str(e)}")
+                        return Response({
+                            "error": f"Erreur lors de l'archivage/suppression: {str(e)}"
+                        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
                 instance.statut = statut
                 
             except Statut.DoesNotExist:
