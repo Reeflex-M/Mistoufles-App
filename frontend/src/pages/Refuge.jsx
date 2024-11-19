@@ -469,20 +469,26 @@ function Refuge() {
       );
 
       if (response.ok) {
-        const updatedAnimal = await response.json();
-        console.log("Réponse API:", updatedAnimal);
+        const data = await response.json();
 
-        // Créer un nouvel objet avec toutes les propriétés de l'ancienne ligne
+        // Si l'animal a été supprimé (adopté)
+        if (data.message === "Animal supprimé car adopté") {
+          setFilteredAnimals((prev) =>
+            prev.filter((row) => row.id !== newRow.id)
+          );
+          return null; // L'animal n'existe plus
+        }
+
+        // Sinon, mettre à jour normalement
         const updatedRow = {
           ...oldRow,
           statut: {
-            id_statut: updatedAnimal.statut,
-            libelle_statut: updatedAnimal.statut_libelle,
+            id_statut: data.statut.id_statut,
+            libelle_statut: data.statut.libelle_statut,
           },
-          statut_libelle: updatedAnimal.statut_libelle,
+          statut_libelle: data.statut_libelle,
         };
 
-        // Mettre à jour l'état avec le nouvel objet
         setFilteredAnimals((prev) =>
           prev.map((row) => (row.id === newRow.id ? updatedRow : row))
         );

@@ -51,9 +51,16 @@ class AnimalUpdate(generics.UpdateAPIView):
         if 'statut' in request.data:
             try:
                 statut = Statut.objects.get(id_statut=request.data['statut'])
+                # Vérifier si le nouveau statut est "adopté"
+                if statut.libelle_statut.lower() == "adopté":
+                    # Supprimer l'animal
+                    instance.delete()
+                    return Response({
+                        "message": "Animal supprimé car adopté"
+                    }, status=status.HTTP_200_OK)
+                
                 instance.statut = statut
                 instance.save()
-                # Retourner l'objet complet avec toutes les données du statut
                 return Response({
                     'id': instance.id_animal,
                     'statut': {
