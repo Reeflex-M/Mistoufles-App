@@ -48,24 +48,35 @@ class AnimalUpdate(generics.UpdateAPIView):
         instance = self.get_object()
         print("Données reçues pour mise à jour:", request.data)
 
+        # Mise à jour des champs simples
+        editable_fields = [
+            'nom_animal', 'date_naissance', 'num_identification',
+            'primo_vacc', 'rappel_vacc', 'vermifuge', 'antipuce',
+            'sterilise', 'biberonnage'
+        ]
+
+        for field in editable_fields:
+            if field in request.data:
+                setattr(instance, field, request.data[field])
+
+        # Mise à jour du statut si présent
         if 'statut' in request.data:
             try:
                 statut = Statut.objects.get(id_statut=request.data['statut'])
+                if statut.libelle_statut.lower() == "adopté":
+                    instance.delete()
+                    return Response({
+                        "message": "Animal supprimé car adopté"
+                    }, status=status.HTTP_200_OK)
+                
                 instance.statut = statut
-                instance.save()
-                # Retourner l'objet complet avec toutes les données du statut
-                return Response({
-                    'id': instance.id_animal,
-                    'statut': {
-                        'id_statut': statut.id_statut,
-                        'libelle_statut': statut.libelle_statut
-                    },
-                    'statut_libelle': statut.libelle_statut
-                })
+                
             except Statut.DoesNotExist:
                 return Response({"error": "Statut non trouvé"}, status=400)
 
-        return Response({"error": "Aucune mise à jour effectuée"}, status=400)
+        instance.save()
+        serializer = AnimalSerializer(instance)
+        return Response(serializer.data)
 
 class AnimalArchiveList(generics.ListAPIView):
     serializer_class = AnimalSerializer

@@ -319,11 +319,64 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
     },
   ].map((column) => ({
     ...column,
-    editable: column.field !== "fa_libelle",
+    editable:
+      column.field !== "fa_libelle" &&
+      column.field !== "statut_libelle" &&
+      column.field !== "provenance_libelle" &&
+      column.field !== "categorie_libelle" &&
+      column.field !== "sexe_libelle",
     headerClassName: "super-app-theme--header",
     headerAlign: "center",
     align: "center",
   }));
+
+  const handleRowUpdate = async (newRow, oldRow) => {
+    try {
+      const changedFields = {};
+      Object.keys(newRow).forEach((key) => {
+        if (newRow[key] !== oldRow[key] && key !== "id") {
+          // Convertir les dates si nécessaire
+          if (
+            key === "date_naissance" ||
+            key === "primo_vacc" ||
+            key === "rappel_vacc" ||
+            key === "vermifuge" ||
+            key === "antipuce"
+          ) {
+            changedFields[key] = newRow[key];
+          } else {
+            changedFields[key] = newRow[key];
+          }
+        }
+      });
+
+      if (Object.keys(changedFields).length === 0) return oldRow;
+
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/animal/${newRow.id}/`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify(changedFields),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.message === "Animal supprimé car adopté") {
+          return null;
+        }
+        return { ...newRow, ...data };
+      }
+      throw new Error("Échec de la mise à jour");
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour:", error);
+      return oldRow;
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -454,6 +507,19 @@ function Refuge() {
 
   const handleRowUpdate = async (newRow, oldRow) => {
     try {
+      // Créer un objet avec seulement les champs modifiés
+      const changedFields = {};
+      Object.keys(newRow).forEach((key) => {
+        if (newRow[key] !== oldRow[key]) {
+          changedFields[key] = newRow[key];
+        }
+      });
+
+      // Si le statut a changé, ajouter l'ID du statut
+      if (newRow.statut?.id_statut !== oldRow.statut?.id_statut) {
+        changedFields.statut = newRow.statut.id_statut;
+      }
+
       const response = await fetch(
         `http://127.0.0.1:8000/api/animal/${newRow.id}/`,
         {
@@ -462,27 +528,30 @@ function Refuge() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
-          body: JSON.stringify({
-            statut: newRow.statut.id_statut,
-          }),
+          body: JSON.stringify(changedFields),
         }
       );
 
       if (response.ok) {
-        const updatedAnimal = await response.json();
-        console.log("Réponse API:", updatedAnimal);
+        const data = await response.json();
 
-        // Créer un nouvel objet avec toutes les propriétés de l'ancienne ligne
+        // Si l'animal a été supprimé (adopté)
+        if (data.message === "Animal supprimé car adopté") {
+          setFilteredAnimals((prev) =>
+            prev.filter((row) => row.id !== newRow.id)
+          );
+          return null;
+        }
+
+        // Créer la ligne mise à jour avec les nouvelles données
         const updatedRow = {
-          ...oldRow,
-          statut: {
-            id_statut: updatedAnimal.statut,
-            libelle_statut: updatedAnimal.statut_libelle,
-          },
-          statut_libelle: updatedAnimal.statut_libelle,
+          ...newRow,
+          ...data,
+          id: newRow.id,
+          statut: data.statut || newRow.statut,
+          statut_libelle: data.statut?.libelle_statut || newRow.statut_libelle,
         };
 
-        // Mettre à jour l'état avec le nouvel objet
         setFilteredAnimals((prev) =>
           prev.map((row) => (row.id === newRow.id ? updatedRow : row))
         );

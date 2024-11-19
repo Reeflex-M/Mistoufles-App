@@ -12,7 +12,7 @@ function FormCreateFA({ onClose }) {
   const [error, setError] = useState(null);
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault(); // Empêche le rechargement de la page lors de la soumission du formulaire par defaut
 
     const accessToken = localStorage.getItem(ACCESS_TOKEN);
     if (!accessToken) {
@@ -46,7 +46,6 @@ function FormCreateFA({ onClose }) {
         throw new Error("Erreur lors de la création du FA");
       }
 
-      console.log("FA créé avec succès");
       alert("FA créé avec succès!");
       window.location.reload(); // Ajoutez cette ligne pour rafraîchir la page
       onClose();
@@ -58,17 +57,27 @@ function FormCreateFA({ onClose }) {
 
   return (
     <div className="max-w-md mx-auto h-full">
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg flex flex-col h-full">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white rounded-lg shadow-lg flex flex-col h-full"
+      >
         <div className="p-4">
           <h2 className="text-xl font-bold mb-4 text-purple-800 text-center border-b-2 border-purple-200 pb-2">
-            Nouvelle Famille d'Accueil
+            Nouvelle Famille d&apos;Accueil
           </h2>
 
-          {error && <p className="text-red-400 text-sm mb-3 bg-red-50 p-2 rounded">{error}</p>}
+          {error && (
+            <p className="text-red-400 text-sm mb-3 bg-red-50 p-2 rounded">
+              {error}
+            </p>
+          )}
 
           <div className="space-y-3">
             <div>
-              <label htmlFor="prenom_fa" className="text-sm text-gray-600 block mb-1">
+              <label
+                htmlFor="prenom_fa"
+                className="text-sm text-gray-600 block mb-1"
+              >
                 Prénom*
               </label>
               <input
@@ -84,7 +93,10 @@ function FormCreateFA({ onClose }) {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="commune_fa" className="text-sm text-gray-600 block mb-1">
+                <label
+                  htmlFor="commune_fa"
+                  className="text-sm text-gray-600 block mb-1"
+                >
                   Commune
                 </label>
                 <input
@@ -98,7 +110,10 @@ function FormCreateFA({ onClose }) {
               </div>
 
               <div>
-                <label htmlFor="telephone_fa" className="text-sm text-gray-600 block mb-1">
+                <label
+                  htmlFor="telephone_fa"
+                  className="text-sm text-gray-600 block mb-1"
+                >
                   Téléphone
                 </label>
                 <input
@@ -113,7 +128,10 @@ function FormCreateFA({ onClose }) {
             </div>
 
             <div>
-              <label htmlFor="libelle_reseausociaux" className="text-sm text-gray-600 block mb-1">
+              <label
+                htmlFor="libelle_reseausociaux"
+                className="text-sm text-gray-600 block mb-1"
+              >
                 Réseaux sociaux
               </label>
               <input
@@ -127,7 +145,10 @@ function FormCreateFA({ onClose }) {
             </div>
 
             <div>
-              <label htmlFor="libelle_veterinaire" className="text-sm text-gray-600 block mb-1">
+              <label
+                htmlFor="libelle_veterinaire"
+                className="text-sm text-gray-600 block mb-1"
+              >
                 Vétérinaire
               </label>
               <input
@@ -141,7 +162,10 @@ function FormCreateFA({ onClose }) {
             </div>
 
             <div>
-              <label htmlFor="note" className="text-sm text-gray-600 block mb-1">
+              <label
+                htmlFor="note"
+                className="text-sm text-gray-600 block mb-1"
+              >
                 Notes
               </label>
               <textarea

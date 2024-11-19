@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Animal, Statut, FA, Provenance, Sexe, Categorie
 
+#User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -11,27 +12,31 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
-    
+#Statut
 class StatutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statut
         fields = ['id_statut', 'libelle_statut']
 
+#Provenance
 class ProvenanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Provenance
         fields = ['id_provenance', 'libelle_provenance']
 
+#Categorie
 class CategorieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categorie
         fields = ['id_categorie', 'libelle_categorie']
 
+#Sexe
 class SexeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sexe
         fields = ['id_sexe', 'libelle_sexe']
 
+#FA
 class FASerializer(serializers.ModelSerializer):
     class Meta:
         model = FA
@@ -43,7 +48,7 @@ class FASerializer(serializers.ModelSerializer):
                   "libelle_veterinaire",
                   "note"]
         
-
+#Animal
 class AnimalSerializer(serializers.ModelSerializer):
     fa = FASerializer(read_only=True)  # Ajout de cette ligne
     statut = StatutSerializer(read_only=True)  # Ajout de cette ligne
@@ -76,14 +81,14 @@ class AnimalSerializer(serializers.ModelSerializer):
         return obj.fa.prenom_fa if obj.fa else None
 
     def create(self, validated_data):
-        # Récupérer les IDs des relations
+        #recuperer les id des relations
         statut_id = self.initial_data.get('statut')
         fa_id = self.initial_data.get('fa')
-        provenance_id = self.initial_data.get('provenance')  # Ajout
-        categorie_id = self.initial_data.get('categorie')    # Ajout
-        sexe_id = self.initial_data.get('sexe')             # Ajout
+        provenance_id = self.initial_data.get('provenance') 
+        categorie_id = self.initial_data.get('categorie')    
+        sexe_id = self.initial_data.get('sexe')             
         
-        # Créer l'animal sans les relations
+        #creer animal sans relation
         animal = Animal.objects.create(**validated_data)
         
         # Ajouter les relations si elles existent
@@ -119,3 +124,18 @@ class AnimalSerializer(serializers.ModelSerializer):
 
         animal.save()
         return animal
+
+    def update(self, instance, validated_data):
+        # Mettre à jour tous les champs simples
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        # Gérer les relations si elles sont présentes dans les données initiales
+        if 'statut' in self.initial_data:
+            try:
+                instance.statut = Statut.objects.get(id_statut=self.initial_data['statut'])
+            except Statut.DoesNotExist:
+                pass
+
+        instance.save()
+        return instance
