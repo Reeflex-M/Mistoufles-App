@@ -81,14 +81,14 @@ class AnimalSerializer(serializers.ModelSerializer):
         return obj.fa.prenom_fa if obj.fa else None
 
     def create(self, validated_data):
-        # Récupérer les IDs des relations
+        #recuperer les id des relations
         statut_id = self.initial_data.get('statut')
         fa_id = self.initial_data.get('fa')
-        provenance_id = self.initial_data.get('provenance')  # Ajout
-        categorie_id = self.initial_data.get('categorie')    # Ajout
-        sexe_id = self.initial_data.get('sexe')             # Ajout
+        provenance_id = self.initial_data.get('provenance') 
+        categorie_id = self.initial_data.get('categorie')    
+        sexe_id = self.initial_data.get('sexe')             
         
-        # Créer l'animal sans les relations
+        #creer animal sans relation
         animal = Animal.objects.create(**validated_data)
         
         # Ajouter les relations si elles existent
@@ -124,3 +124,18 @@ class AnimalSerializer(serializers.ModelSerializer):
 
         animal.save()
         return animal
+
+    def update(self, instance, validated_data):
+        # Mettre à jour tous les champs simples
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        # Gérer les relations si elles sont présentes dans les données initiales
+        if 'statut' in self.initial_data:
+            try:
+                instance.statut = Statut.objects.get(id_statut=self.initial_data['statut'])
+            except Statut.DoesNotExist:
+                pass
+
+        instance.save()
+        return instance
