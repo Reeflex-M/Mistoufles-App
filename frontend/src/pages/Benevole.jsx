@@ -188,7 +188,7 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
         />
       </div>
       <div
-        style={{ height: 600, width: "100%" }}
+        style={{ height: 700, width: "100%" }}
         className="border border-gray-200 rounded-lg overflow-hidden relative z-0"
       >
         <DataGrid
@@ -206,14 +206,19 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
           sx={{
             backgroundColor: "white",
             "& .super-app-theme--header": {
-              backgroundColor: "#f3f4f6",
-              fontSize: "0.7rem",
-              fontWeight: "bold",
-              borderRight: "1px solid #e5e7eb",
-              borderBottom: "2px solid #d1d5db",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
+              backgroundColor: "#f8fafc",
+              fontSize: "0.85rem",
+              fontWeight: "900",
+              color: "#0f172a",
+              borderRight: "1px solid #e2e8f0",
+              borderBottom: "2px solid #64748b",
+              textTransform: "uppercase",
+              letterSpacing: "0.025em",
+              padding: "8px 4px",
+              textShadow: "0 0 1px rgba(15, 23, 42, 0.1)",
+              "&:hover": {
+                backgroundColor: "#f1f5f9",
+              },
             },
             "& .MuiDataGrid-cell": {
               fontSize: "0.7rem",

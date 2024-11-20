@@ -184,10 +184,31 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
   const columns = [
     { field: "nom_animal", headerName: "Nom", flex: 0.8, minWidth: 100 },
     {
+      field: "date_arrivee",
+      headerName: "Arrivée",
+      flex: 0.9,
+      minWidth: 100,
+      renderCell: (params) => {
+        if (!params.value) return "";
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
+    },
+    {
       field: "date_naissance",
       headerName: "Naissance",
       flex: 0.9,
       minWidth: 100,
+      renderCell: (params) => {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
     },
     {
       field: "num_identification",
@@ -195,10 +216,58 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
       flex: 0.9,
       minWidth: 100,
     },
-    { field: "primo_vacc", headerName: "1er Vacc", flex: 0.9, minWidth: 100 },
-    { field: "rappel_vacc", headerName: "Rappel", flex: 0.9, minWidth: 100 },
-    { field: "vermifuge", headerName: "Vermif.", flex: 0.8, minWidth: 90 },
-    { field: "antipuce", headerName: "Anti-p.", flex: 0.8, minWidth: 90 },
+    {
+      field: "primo_vacc",
+      headerName: "1er Vacc",
+      flex: 0.9,
+      minWidth: 100,
+      renderCell: (params) => {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
+    },
+    {
+      field: "rappel_vacc",
+      headerName: "Rappel",
+      flex: 0.9,
+      minWidth: 100,
+      renderCell: (params) => {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
+    },
+    {
+      field: "vermifuge",
+      headerName: "Vermif.",
+      flex: 0.8,
+      minWidth: 90,
+      renderCell: (params) => {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
+    },
+    {
+      field: "antipuce",
+      headerName: "Anti-p.",
+      flex: 0.8,
+      minWidth: 90,
+      renderCell: (params) => {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
+    },
     {
       field: "sterilise",
       headerName: "Stér.",
@@ -309,10 +378,28 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
         if (!params.value) return "";
         return (
           <div
-            className="text-blue-600 cursor-pointer hover:underline"
+            className="px-2 py-1 bg-purple-50 text-gray-900 rounded-md hover:bg-purple-100 
+            transition-all duration-200 cursor-pointer flex items-center gap-1 
+            hover:shadow-sm active:bg-purple-200 group w-full justify-center"
             onClick={() => handleFaClick(params.row.id_fa)}
           >
-            {params.value}
+            <span className="text-sm font-medium group-hover:text-gray-900">
+              {params.value}
+            </span>
+            <svg
+              className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 
+              group-hover:translate-x-0 transition-all duration-200 text-gray-900"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
           </div>
         );
       },
@@ -390,7 +477,7 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
         />
       </div>
       <div
-        style={{ height: 600, width: "100%" }}
+        style={{ height: 700, width: "100%" }} // Modifié de 600 à 750 pour afficher plus de lignes
         className="border border-gray-200 rounded-lg overflow-hidden"
       >
         <DataGrid
@@ -408,24 +495,32 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
           sx={{
             backgroundColor: "white",
             "& .super-app-theme--header": {
-              backgroundColor: "#f3f4f6",
-              fontSize: "0.75rem",
-              fontWeight: "bold",
-              borderRight: "1px solid #e5e7eb",
-              borderBottom: "2px solid #d1d5db",
+              backgroundColor: "#f8fafc",
+              fontSize: "0.85rem",
+              fontWeight: "900", // Augmenté à 900 pour un gras plus prononcé
+              color: "#0f172a", // slate-900 pour un contraste plus fort
+              borderRight: "1px solid #e2e8f0",
+              borderBottom: "2px solid #64748b", // slate-500 pour une bordure plus visible
+              textTransform: "uppercase",
+              letterSpacing: "0.025em",
+              padding: "8px 4px",
+              textShadow: "0 0 1px rgba(15, 23, 42, 0.1)", // Effet subtil pour renforcer le texte
+              "&:hover": {
+                backgroundColor: "#f1f5f9",
+              },
             },
             "& .MuiDataGrid-cell": {
               fontSize: "0.75rem",
               padding: "4px",
-              borderRight: "1px solid #e5e7eb",
-              borderBottom: "1px solid #e5e7eb",
+              borderRight: "1px solid #e2e8f0", // slate-200
+              borderBottom: "1px solid #e2e8f0", // slate-200
             },
             "& .MuiDataGrid-row": {
               "&:nth-of-type(odd)": {
-                backgroundColor: "#f9fafb",
+                backgroundColor: "#f8fafc", // slate-50
               },
               "&:hover": {
-                backgroundColor: "#f3f4f6",
+                backgroundColor: "#f1f5f9", // slate-100
               },
             },
             "& .MuiDataGrid-columnHeaders": {

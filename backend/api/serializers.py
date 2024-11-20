@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Animal, Statut, FA, Provenance, Sexe, Categorie
+from .models import Animal, Statut, FA, Provenance, Sexe, Categorie, Archive
 
 #User
 class UserSerializer(serializers.ModelSerializer):
@@ -60,6 +60,7 @@ class AnimalSerializer(serializers.ModelSerializer):
     categorie_libelle = serializers.SerializerMethodField()
     sexe_libelle = serializers.SerializerMethodField()
     fa_libelle = serializers.SerializerMethodField()
+    date_naissance = serializers.DateField(format='%d/%m/%Y', input_formats=['%Y-%m-%d', '%d/%m/%Y'], allow_null=True)
 
     class Meta:
         model = Animal
@@ -139,3 +140,20 @@ class AnimalSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+class ArchiveSerializer(serializers.ModelSerializer):
+    statut = StatutSerializer(read_only=True)
+    provenance = ProvenanceSerializer(read_only=True)
+    categorie = CategorieSerializer(read_only=True)
+    sexe = SexeSerializer(read_only=True)
+    fa = FASerializer(read_only=True)
+    created_at = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Archive
+        fields = '__all__'
+
+    def get_created_at(self, obj):
+        if obj.created_at:
+            return obj.created_at.strftime('%d/%m/%Y')
+        return None

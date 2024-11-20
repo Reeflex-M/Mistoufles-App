@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics, status
-from .serializers import UserSerializer, AnimalSerializer, FASerializer, UserSerializer, StatutSerializer, ProvenanceSerializer, SexeSerializer, CategorieSerializer
+from .serializers import UserSerializer, AnimalSerializer, FASerializer, UserSerializer, StatutSerializer, ProvenanceSerializer, SexeSerializer, CategorieSerializer, ArchiveSerializer
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
@@ -109,10 +109,13 @@ class AnimalUpdate(generics.UpdateAPIView):
         return Response(serializer.data)
 
 class AnimalArchiveList(generics.ListAPIView):
-    serializer_class = AnimalSerializer
+    serializer_class = ArchiveSerializer
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        return Animal.objects.filter(archive=True)
+        return Archive.objects.select_related(
+            'statut', 'provenance', 'categorie', 'sexe', 'fa'
+        ).all()
 
 
 

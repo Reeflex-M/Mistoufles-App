@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class Animal(models.Model):
     id_animal = models.AutoField(primary_key=True)
     nom_animal = models.CharField(max_length=100)
+    date_arrivee = models.DateTimeField(default=timezone.now)  # Modifié
     date_naissance = models.DateField(null=True, blank=True)
     num_identification = models.CharField(max_length=50, unique=True, null=True, blank=True)
     primo_vacc = models.DateField(null=True, blank=True)
@@ -66,6 +68,7 @@ class Sexe(models.Model):
 
 class Archive(models.Model):
     id_animal = models.AutoField(primary_key=True)
+    created_at = models.DateTimeField(default=timezone.now)
     nom_animal = models.CharField(max_length=100)
     date_naissance = models.DateField(null=True, blank=True)
     num_identification = models.CharField(max_length=50, unique=True, null=True, blank=True)
