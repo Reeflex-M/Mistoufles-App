@@ -231,10 +231,10 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
                 backgroundColor: "#ffffff",
               },
               "&:nth-of-type(odd)": {
-                backgroundColor: "#f1f5f9",
+                backgroundColor: "#e2e8f0", // Changé de f1f5f9 à e2e8f0 pour plus de contraste
               },
               "&:hover": {
-                backgroundColor: "#e2e8f0 !important",
+                backgroundColor: "#cbd5e1 !important", // Changé pour un hover plus visible sur fond foncé
                 cursor: "pointer",
               },
             },
