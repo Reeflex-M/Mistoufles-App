@@ -189,12 +189,8 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
       flex: 0.9,
       minWidth: 100,
       renderCell: (params) => {
-        if (!params.value) return "";
-        const date = new Date(params.value);
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = (date.getMonth() + 1).toString().padStart(2, "0");
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+        if (!params || !params.value) return "";
+        return params.value;
       },
     },
     {
@@ -203,12 +199,8 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
       flex: 0.9,
       minWidth: 100,
       renderCell: (params) => {
-        if (!params.value) return "";
-        const date = new Date(params.value);
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = (date.getMonth() + 1).toString().padStart(2, "0");
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+        if (!params || !params.value) return "";
+        return params.value;
       },
     },
     {
@@ -223,13 +215,8 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
       flex: 0.9,
       minWidth: 100,
       renderCell: (params) => {
-        if (!params.value) return "";
-        const date = new Date(params.value);
-        if (date.getFullYear() === 1970) return "";
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = (date.getMonth() + 1).toString().padStart(2, "0");
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+        if (!params || !params.value) return "";
+        return params.value;
       },
     },
     {
@@ -238,13 +225,8 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
       flex: 0.9,
       minWidth: 100,
       renderCell: (params) => {
-        if (!params.value) return "";
-        const date = new Date(params.value);
-        if (date.getFullYear() === 1970) return "";
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = (date.getMonth() + 1).toString().padStart(2, "0");
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+        if (!params || !params.value) return "";
+        return params.value;
       },
     },
     {
@@ -253,13 +235,8 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
       flex: 0.8,
       minWidth: 90,
       renderCell: (params) => {
-        if (!params.value) return "";
-        const date = new Date(params.value);
-        if (date.getFullYear() === 1970) return "";
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = (date.getMonth() + 1).toString().padStart(2, "0");
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+        if (!params || !params.value) return "";
+        return params.value;
       },
     },
     {
@@ -268,13 +245,8 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
       flex: 0.8,
       minWidth: 90,
       renderCell: (params) => {
-        if (!params.value) return "";
-        const date = new Date(params.value);
-        if (date.getFullYear() === 1970) return "";
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = (date.getMonth() + 1).toString().padStart(2, "0");
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+        if (!params || !params.value) return "";
+        return params.value;
       },
     },
     {

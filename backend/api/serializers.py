@@ -61,6 +61,11 @@ class AnimalSerializer(serializers.ModelSerializer):
     sexe_libelle = serializers.SerializerMethodField()
     fa_libelle = serializers.SerializerMethodField()
     date_naissance = serializers.DateField(format='%d/%m/%Y', input_formats=['%Y-%m-%d', '%d/%m/%Y'], allow_null=True)
+    date_arrivee = serializers.DateTimeField(format="%d/%m/%Y", input_formats=['%Y-%m-%d', '%d/%m/%Y', 'iso-8601'], required=False)
+    primo_vacc = serializers.DateField(format="%d/%m/%Y", required=False, allow_null=True)
+    rappel_vacc = serializers.DateField(format="%d/%m/%Y", required=False, allow_null=True)
+    vermifuge = serializers.DateField(format="%d/%m/%Y", required=False, allow_null=True)
+    antipuce = serializers.DateField(format="%d/%m/%Y", required=False, allow_null=True)
 
     class Meta:
         model = Animal
