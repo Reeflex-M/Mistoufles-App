@@ -210,11 +210,11 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
               fontSize: "0.85rem",
               fontWeight: "900",
               color: "#0f172a",
-              borderRight: "1px solid #e2e8f0",
+              borderRight: "1px solid #cbd5e1", // Bordure plus visible
               borderBottom: "2px solid #64748b",
               textTransform: "uppercase",
               letterSpacing: "0.025em",
-              padding: "8px 4px",
+              padding: "8px 6px", // Légèrement plus large
               textShadow: "0 0 1px rgba(15, 23, 42, 0.1)",
               "&:hover": {
                 backgroundColor: "#f1f5f9",
@@ -222,9 +222,9 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
             },
             "& .MuiDataGrid-cell": {
               fontSize: "0.75rem",
-              padding: "4px",
-              borderRight: "1px solid #e2e8f0",
-              borderBottom: "1px solid #e2e8f0",
+              padding: "4px 6px", // Légèrement plus large
+              borderRight: "1px solid #cbd5e1", // Bordure plus visible
+              borderBottom: "1px solid #cbd5e1", // Bordure plus visible
             },
             "& .MuiDataGrid-row": {
               "&:nth-of-type(even)": {
@@ -239,7 +239,7 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
               },
             },
             "& .MuiDataGrid-columnHeaders": {
-              borderBottom: "none",
+              borderBottom: "2px solid #cbd5e1", // Bordure plus visible
               backgroundColor: "#e2e8f0",
             },
             "& .MuiDataGrid-footerContainer": {
