@@ -118,9 +118,9 @@ const Navbar = () => {
       case "benevole":
         return 128;
       case "stats":
-        return 192;
+        return 207; // Modifié de 224 à 216
       case "archive":
-        return 256;
+        return 270; // Modifié de 288 à 280
       default:
         return 0;
     }
