@@ -172,6 +172,96 @@ function Stats() {
     ],
   };
 
+  // Ajoutez ces données de préparation pour le graphique des provenances juste après motifData
+  const provenanceData = {
+    labels: Array.from(
+      new Set(
+        archiveData
+          .filter((item) => item.provenance?.libelle_provenance)
+          .map((item) => item.provenance.libelle_provenance)
+      )
+    ),
+    datasets: [
+      {
+        data: Array.from(
+          new Set(
+            archiveData
+              .filter((item) => item.provenance?.libelle_provenance)
+              .map((item) => item.provenance.libelle_provenance)
+          )
+        ).map(
+          (provenance) =>
+            archiveData.filter(
+              (item) =>
+                item.provenance?.libelle_provenance === provenance &&
+                (selectedYear === "Global" ||
+                  new Date(item.created_at).getFullYear() ===
+                    Number(selectedYear))
+            ).length
+        ),
+        backgroundColor: [
+          "#f472b6", // rose
+          "#fb923c", // orange
+          "#a78bfa", // violet
+          "#60a5fa", // bleu
+          "#4ade80", // vert
+          "#facc15", // jaune
+          "#94a3b8", // gris
+        ],
+        borderColor: [
+          "#ec4899",
+          "#f97316",
+          "#7c3aed",
+          "#3b82f6",
+          "#22c55e",
+          "#eab308",
+          "#64748b",
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  // Ajouter après provenanceData
+  const categorieData = {
+    labels: Array.from(
+      new Set(
+        archiveData
+          .filter((item) => item.categorie?.libelle_categorie)
+          .map((item) => item.categorie.libelle_categorie)
+      )
+    ),
+    datasets: [
+      {
+        data: Array.from(
+          new Set(
+            archiveData
+              .filter((item) => item.categorie?.libelle_categorie)
+              .map((item) => item.categorie.libelle_categorie)
+          )
+        ).map(
+          (categorie) =>
+            archiveData.filter(
+              (item) =>
+                item.categorie?.libelle_categorie === categorie &&
+                (selectedYear === "Global" ||
+                  new Date(item.created_at).getFullYear() ===
+                    Number(selectedYear))
+            ).length
+        ),
+        backgroundColor: [
+          "#84cc16", // lime
+          "#06b6d4", // cyan
+          "#f43f5e", // rose
+          "#8b5cf6", // violet
+          "#fbbf24", // amber
+        ],
+        borderColor: ["#65a30d", "#0891b2", "#e11d48", "#7c3aed", "#d97706"],
+        borderWidth: 1,
+      },
+    ],
+  };
+
   // Préparation des données pour le graphique des adoptions par mois
   const getMonthlyAdoptions = () => {
     const monthlyData = {};
@@ -291,6 +381,32 @@ function Stats() {
                       },
                     },
                   }}
+                />
+              </div>
+            </div>
+
+            {/* Ajoutez ce nouveau bloc après les deux graphiques existants */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold mb-4">
+                Répartition par provenance
+              </h2>
+              <div className="h-[300px] flex justify-center">
+                <Pie
+                  data={provenanceData}
+                  options={{ maintainAspectRatio: false }}
+                />
+              </div>
+            </div>
+
+            {/* Ajouter ce nouveau bloc après les autres graphiques */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold mb-4">
+                Répartition par catégorie
+              </h2>
+              <div className="h-[300px] flex justify-center">
+                <Pie
+                  data={categorieData}
+                  options={{ maintainAspectRatio: false }}
                 />
               </div>
             </div>
