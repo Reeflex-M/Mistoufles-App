@@ -6,6 +6,7 @@ import Stats from "./pages/Stats";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import Archive from "./pages/Archive";
+import Chatterie from "./pages/Chatterie";
 import "./index.css";
 
 const Logout = () => {
@@ -56,6 +57,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Archive />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chatterie"
+          element={
+            <ProtectedRoute>
+              <Chatterie />
             </ProtectedRoute>
           }
         />

@@ -113,12 +113,14 @@ const Navbar = () => {
     switch (item) {
       case "refuge":
         return 0;
-      case "benevole":
+      case "chatterie":
         return 64;
+      case "benevole":
+        return 128;
       case "stats":
-        return 144;
+        return 192;
       case "archive":
-        return 208;
+        return 256;
       default:
         return 0;
     }
@@ -198,10 +200,27 @@ const Navbar = () => {
             >
               <div className="flex items-center h-full px-4">
                 <RiHome5Fill className="text-xl w-[20px]" />
-                <span className="ml-3">Refuge</span>
+                <span className="ml-3">FA</span>
               </div>
             </Link>
           </li>
+
+          {/* Après l'onglet FA (refuge) et avant bénévole */}
+          <li>
+            <Link
+              to="/chatterie"
+              className={`block w-full h-[48px] rounded-lg relative ${
+                activeItem === "chatterie" ? "text-purple-600" : "text-gray-600"
+              }`}
+              onClick={() => setActiveItem("chatterie")}
+            >
+              <div className="flex items-center h-full px-4">
+                <FaPaw className="text-xl w-[20px]" />
+                <span className="ml-3">Chatterie</span>
+              </div>
+            </Link>
+          </li>
+
           <li>
             <Link
               to="/benevole"
