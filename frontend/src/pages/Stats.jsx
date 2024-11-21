@@ -111,7 +111,13 @@ function Stats() {
 
   // Préparation des données pour le graphique des motifs d'archivage
   const motifData = {
-    labels: ["Adoption", "Mort Naturelle", "Mort Euthanasie", "Sortie Refuge"],
+    labels: [
+      "Adoption",
+      "Mort Naturelle",
+      "Mort Euthanasie",
+      "Sortie Refuge",
+      "Chat Libre",
+    ],
     datasets: [
       {
         data: [
@@ -145,9 +151,22 @@ function Stats() {
                 new Date(item.created_at).getFullYear() ===
                   Number(selectedYear))
           ).length,
+          archiveData.filter(
+            (item) =>
+              item.statut?.libelle_statut?.toLowerCase() === "chat libre" &&
+              (selectedYear === "Global" ||
+                new Date(item.created_at).getFullYear() ===
+                  Number(selectedYear))
+          ).length,
         ],
-        backgroundColor: ["#4ade80", "#f87171", "#fbbf24", "#60a5fa"],
-        borderColor: ["#22c55e", "#ef4444", "#f59e0b", "#3b82f6"],
+        backgroundColor: [
+          "#4ade80",
+          "#f87171",
+          "#fbbf24",
+          "#60a5fa",
+          "#a78bfa",
+        ],
+        borderColor: ["#22c55e", "#ef4444", "#f59e0b", "#3b82f6", "#7c3aed"],
         borderWidth: 1,
       },
     ],
