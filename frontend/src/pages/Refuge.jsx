@@ -497,14 +497,14 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
             "& .super-app-theme--header": {
               backgroundColor: "#f8fafc",
               fontSize: "0.85rem",
-              fontWeight: "900", // Augmenté à 900 pour un gras plus prononcé
-              color: "#0f172a", // slate-900 pour un contraste plus fort
+              fontWeight: "900",
+              color: "#0f172a",
               borderRight: "1px solid #e2e8f0",
-              borderBottom: "2px solid #64748b", // slate-500 pour une bordure plus visible
+              borderBottom: "2px solid #64748b",
               textTransform: "uppercase",
               letterSpacing: "0.025em",
               padding: "8px 4px",
-              textShadow: "0 0 1px rgba(15, 23, 42, 0.1)", // Effet subtil pour renforcer le texte
+              textShadow: "0 0 1px rgba(15, 23, 42, 0.1)",
               "&:hover": {
                 backgroundColor: "#f1f5f9",
               },
@@ -512,19 +512,28 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
             "& .MuiDataGrid-cell": {
               fontSize: "0.75rem",
               padding: "4px",
-              borderRight: "1px solid #e2e8f0", // slate-200
-              borderBottom: "1px solid #e2e8f0", // slate-200
+              borderRight: "1px solid #e2e8f0",
+              borderBottom: "1px solid #e2e8f0",
             },
             "& .MuiDataGrid-row": {
+              "&:nth-of-type(even)": {
+                backgroundColor: "#ffffff",
+              },
               "&:nth-of-type(odd)": {
-                backgroundColor: "#f8fafc", // slate-50
+                backgroundColor: "#f1f5f9", // Slate-100 pour un contraste plus marqué
               },
               "&:hover": {
-                backgroundColor: "#f1f5f9", // slate-100
+                backgroundColor: "#e2e8f0 !important", // Slate-200 pour un hover plus visible
+                cursor: "pointer",
               },
             },
             "& .MuiDataGrid-columnHeaders": {
               borderBottom: "none",
+              backgroundColor: "#e2e8f0", // Slate-200 pour l'en-tête
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderTop: "2px solid #e2e8f0",
+              backgroundColor: "#f8fafc",
             },
           }}
         />

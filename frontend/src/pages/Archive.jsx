@@ -106,16 +106,28 @@ const ArchiveTable = ({ archives }) => {
             "& .MuiDataGrid-cell": {
               fontSize: "0.75rem",
               padding: "4px",
-              borderRight: "1px solid #e5e7eb",
-              borderBottom: "1px solid #e5e7eb",
+              borderRight: "1px solid #e2e8f0",
+              borderBottom: "1px solid #e2e8f0",
             },
             "& .MuiDataGrid-row": {
+              "&:nth-of-type(even)": {
+                backgroundColor: "#ffffff",
+              },
               "&:nth-of-type(odd)": {
-                backgroundColor: "#f9fafb",
+                backgroundColor: "#f1f5f9",
               },
               "&:hover": {
-                backgroundColor: "#f3f4f6",
+                backgroundColor: "#e2e8f0 !important",
+                cursor: "pointer",
               },
+            },
+            "& .MuiDataGrid-columnHeaders": {
+              borderBottom: "none",
+              backgroundColor: "#e2e8f0",
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderTop: "2px solid #e2e8f0",
+              backgroundColor: "#f8fafc",
             },
           }}
         />
