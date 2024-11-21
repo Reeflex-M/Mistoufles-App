@@ -27,6 +27,8 @@ function Stats() {
   const [archiveData, setArchiveData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [availableYears, setAvailableYears] = useState([]);
 
   useEffect(() => {
     const fetchArchiveData = async () => {
@@ -44,9 +46,14 @@ function Stats() {
           throw new Error("Erreur lors de la récupération des données");
 
         const data = await response.json();
+        console.log("Données reçues:", data); // Vérifier que 'created_at' est présent
+        data.forEach((item) => {
+          console.log("Statut:", item.statut?.libelle_statut); // Debug chaque statut
+        });
         setArchiveData(data);
         setLoading(false);
       } catch (err) {
+        console.error("Erreur:", err); // Debug
         setError(err.message);
         setLoading(false);
       }
@@ -55,25 +62,92 @@ function Stats() {
     fetchArchiveData();
   }, []);
 
+  useEffect(() => {
+    // Extraire les années disponibles à partir des données
+    const years = Array.from(
+      new Set(
+        archiveData
+          .map((item) => {
+            const dateStr = item.created_at;
+            if (dateStr) {
+              const date = new Date(dateStr);
+              const year = date.getFullYear();
+              return isNaN(year) ? null : year;
+            }
+            return null;
+          })
+          .filter((year) => year !== null)
+      )
+    ).sort((a, b) => b - a);
+    setAvailableYears(["Global", ...years]);
+  }, [archiveData]);
+
+  // Log des données filtrées
+  useEffect(() => {
+    console.log(
+      "Adoptés:",
+      archiveData.filter((item) => item.statut?.libelle_statut === "adopté")
+        .length
+    );
+    console.log(
+      "Mort naturel:",
+      archiveData.filter(
+        (item) => item.statut?.libelle_statut === "mort naturel"
+      ).length
+    );
+    console.log(
+      "Mort euthanasie:",
+      archiveData.filter(
+        (item) => item.statut?.libelle_statut === "mort euthanasie"
+      ).length
+    );
+    console.log(
+      "Transfert:",
+      archiveData.filter(
+        (item) => item.statut?.libelle_statut === "transfert refuge"
+      ).length
+    );
+  }, [archiveData]);
+
   // Préparation des données pour le graphique des motifs d'archivage
   const motifData = {
-    labels: ["Adoption", "Décès", "Autre"],
+    labels: ["Adoption", "Mort Naturelle", "Mort Euthanasie", "Sortie Refuge"],
     datasets: [
       {
         data: [
           archiveData.filter(
-            (item) => item.motif_archive?.libelle_motif === "Adoption"
-          ).length,
-          archiveData.filter(
-            (item) => item.motif_archive?.libelle_motif === "Décès"
+            (item) =>
+              item.statut?.libelle_statut?.toLowerCase() === "adopté" &&
+              (selectedYear === "Global" ||
+                new Date(item.created_at).getFullYear() ===
+                  Number(selectedYear))
           ).length,
           archiveData.filter(
             (item) =>
-              !["Adoption", "Décès"].includes(item.motif_archive?.libelle_motif)
+              item.statut?.libelle_statut?.toLowerCase() === "mort naturel" &&
+              (selectedYear === "Global" ||
+                new Date(item.created_at).getFullYear() ===
+                  Number(selectedYear))
+          ).length,
+          archiveData.filter(
+            (item) =>
+              item.statut?.libelle_statut?.toLowerCase() ===
+                "mort euthanasie" &&
+              (selectedYear === "Global" ||
+                new Date(item.created_at).getFullYear() ===
+                  Number(selectedYear))
+          ).length,
+          archiveData.filter(
+            (item) =>
+              item.statut?.libelle_statut?.toLowerCase() ===
+                "transfert refuge" &&
+              (selectedYear === "Global" ||
+                new Date(item.created_at).getFullYear() ===
+                  Number(selectedYear))
           ).length,
         ],
-        backgroundColor: ["#4ade80", "#f87171", "#fbbf24"],
-        borderColor: ["#22c55e", "#ef4444", "#f59e0b"],
+        backgroundColor: ["#4ade80", "#f87171", "#fbbf24", "#60a5fa"],
+        borderColor: ["#22c55e", "#ef4444", "#f59e0b", "#3b82f6"],
         borderWidth: 1,
       },
     ],
@@ -83,11 +157,25 @@ function Stats() {
   const getMonthlyAdoptions = () => {
     const monthlyData = {};
     archiveData
-      .filter((item) => item.motif_archive?.libelle_motif === "Adoption")
+      .filter((item) => {
+        if (
+          item.statut?.libelle_statut?.toLowerCase() === "adopté" &&
+          item.created_at
+        ) {
+          const itemYear = new Date(item.created_at).getFullYear();
+          return selectedYear === "Global" || itemYear === Number(selectedYear);
+        }
+        return false;
+      })
       .forEach((item) => {
-        const date = new Date(item.date_archive);
-        const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`;
-        monthlyData[monthYear] = (monthlyData[monthYear] || 0) + 1;
+        const date = new Date(item.created_at);
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+        const label =
+          selectedYear === "Global"
+            ? `${month}/${year}`
+            : `${month}/${selectedYear}`;
+        monthlyData[label] = (monthlyData[label] || 0) + 1;
       });
 
     return {
@@ -132,6 +220,25 @@ function Stats() {
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-gray-800">Statistiques</h1>
             <p className="text-gray-600 mt-2">Statistiques du refuge</p>
+          </div>
+
+          {/* Sélecteur d'année */}
+          <div className="mb-6">
+            <label htmlFor="year-select" className="mr-2">
+              Sélectionnez une année :
+            </label>
+            <select
+              id="year-select"
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="border border-gray-300 rounded p-1"
+            >
+              {availableYears.map((year) => (
+                <option key={year} value={year}>
+                  {year === "Global" ? "Toutes les années" : year}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

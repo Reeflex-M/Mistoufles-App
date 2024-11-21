@@ -672,7 +672,7 @@ function Refuge() {
         <Navbar />
       </div>
       <div className="flex-grow flex flex-col md:pl-64 relative z-0">
-        <main className="flex-grow p-4">
+        <main className="flex-grow p-4 mt-16 md:mt-0">
           {isMainPage && (
             <AnimalTable
               animals={filteredAnimals}

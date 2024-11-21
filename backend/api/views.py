@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from rest_framework import generics, status
+from rest_framework import generics, status, viewsets
 from .serializers import UserSerializer, AnimalSerializer, FASerializer, UserSerializer, StatutSerializer, ProvenanceSerializer, SexeSerializer, CategorieSerializer, ArchiveSerializer
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -19,7 +19,6 @@ class AnimalListCreate(generics.ListCreateAPIView):
         return queryset.prefetch_related('provenance', 'categorie', 'sexe')
     
     def create(self, request, *args, **kwargs):
-        print("Données reçues:", request.data)  # Debug
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             animal = serializer.save()
@@ -63,7 +62,7 @@ class AnimalUpdate(generics.UpdateAPIView):
         if 'statut' in request.data:
             try:
                 statut = Statut.objects.get(id_statut=request.data['statut'])
-                if statut.libelle_statut.lower() == "adopté":
+                if statut.libelle_statut.lower() == "adopté" or statut.libelle_statut.lower() == "mort naturel" or statut.libelle_statut.lower() == "Mort euthanasie" or statut.libelle_statut.lower() == "transfert refuge":
                     try:
                         # Créer une archive
                         print(f"Tentative d'archivage pour l'animal: {instance.nom_animal}")
@@ -130,7 +129,7 @@ class FAListCreate(generics.ListCreateAPIView):
         return FA.objects.all()
     
     # Correction du nom de la méthode
-    def perform_create(self, serializer):  # Changé de perform_create_fa à perform_create
+    def perform_create(self, serializer):  
         serializer.save()  
 
 class FAUpdate(generics.UpdateAPIView):
@@ -140,13 +139,11 @@ class FAUpdate(generics.UpdateAPIView):
 
     def patch(self, request, *args, **kwargs):
         instance = self.get_object()
-        print("Données reçues pour mise à jour FA:", request.data)  # Debug
 
         # Mise à jour spécifique pour la note
         if 'note' in request.data:
             instance.note = request.data['note']
             instance.save()
-            print("Note mise à jour:", instance.note)  # Debug
             return Response({'note': instance.note})
 
         # Pour les autres champs
@@ -210,3 +207,7 @@ class CurrentUserView(APIView):
         return Response(serializer.data)
 
 # Supprimez la classe HistoriqueList
+
+class ArchiveViewSet(viewsets.ModelViewSet):
+    queryset = Archive.objects.all()
+    serializer_class = ArchiveSerializer

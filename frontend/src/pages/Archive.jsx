@@ -166,7 +166,9 @@ function Archive() {
         <Navbar />
       </div>
       <div className="flex-grow flex flex-col md:pl-64 relative z-0">
-        <main className="flex-grow p-4">
+        <main className="flex-grow p-4 mt-16 md:mt-0">
+          {" "}
+          {/* Ajout de mt-16 en mobile */}
           <h1 className="text-2xl font-bold mb-6">Archives</h1>
           <ArchiveTable archives={archives} />
         </main>

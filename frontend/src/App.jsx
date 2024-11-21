@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
-import Home from "./pages/Home";
 import Refuge from "./pages/Refuge";
 import Benevole from "./pages/Benevole";
 import Stats from "./pages/Stats";
@@ -22,7 +21,7 @@ function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <Home />
+              <Refuge />
             </ProtectedRoute>
           }
         />

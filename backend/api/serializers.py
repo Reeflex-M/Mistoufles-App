@@ -50,11 +50,11 @@ class FASerializer(serializers.ModelSerializer):
         
 #Animal
 class AnimalSerializer(serializers.ModelSerializer):
-    fa = FASerializer(read_only=True)  # Ajout de cette ligne
-    statut = StatutSerializer(read_only=True)  # Ajout de cette ligne
-    provenance = ProvenanceSerializer(read_only=True)  # Ajout
-    categorie = CategorieSerializer(read_only=True)    # Ajout
-    sexe = SexeSerializer(read_only=True)             # Ajout
+    fa = FASerializer(read_only=True)  
+    statut = StatutSerializer(read_only=True) 
+    provenance = ProvenanceSerializer(read_only=True) 
+    categorie = CategorieSerializer(read_only=True)   
+    sexe = SexeSerializer(read_only=True)             
     statut_libelle = serializers.SerializerMethodField()
     provenance_libelle = serializers.SerializerMethodField()
     categorie_libelle = serializers.SerializerMethodField()
@@ -82,7 +82,6 @@ class AnimalSerializer(serializers.ModelSerializer):
         return obj.fa.prenom_fa if obj.fa else None
 
     def create(self, validated_data):
-        #recuperer les id des relations
         statut_id = self.initial_data.get('statut')
         fa_id = self.initial_data.get('fa')
         provenance_id = self.initial_data.get('provenance') 
@@ -92,7 +91,6 @@ class AnimalSerializer(serializers.ModelSerializer):
         #creer animal sans relation
         animal = Animal.objects.create(**validated_data)
         
-        # Ajouter les relations si elles existent
         if statut_id:
             try:
                 animal.statut = Statut.objects.get(id_statut=statut_id)
@@ -105,19 +103,19 @@ class AnimalSerializer(serializers.ModelSerializer):
             except FA.DoesNotExist:
                 pass
 
-        if provenance_id:  # Ajout
+        if provenance_id:  
             try:
                 animal.provenance = Provenance.objects.get(id_provenance=provenance_id)
             except Provenance.DoesNotExist:
                 pass
 
-        if categorie_id:  # Ajout
+        if categorie_id:  
             try:
                 animal.categorie = Categorie.objects.get(id_categorie=categorie_id)
             except Categorie.DoesNotExist:
                 pass
 
-        if sexe_id:  # Ajout
+        if sexe_id:  
             try:
                 animal.sexe = Sexe.objects.get(id_sexe=sexe_id)
             except Sexe.DoesNotExist:
@@ -147,13 +145,7 @@ class ArchiveSerializer(serializers.ModelSerializer):
     categorie = CategorieSerializer(read_only=True)
     sexe = SexeSerializer(read_only=True)
     fa = FASerializer(read_only=True)
-    created_at = serializers.SerializerMethodField()
 
     class Meta:
         model = Archive
         fields = '__all__'
-
-    def get_created_at(self, obj):
-        if obj.created_at:
-            return obj.created_at.strftime('%d/%m/%Y')
-        return None
