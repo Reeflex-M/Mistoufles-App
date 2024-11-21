@@ -62,7 +62,7 @@ class AnimalUpdate(generics.UpdateAPIView):
         if 'statut' in request.data:
             try:
                 statut = Statut.objects.get(id_statut=request.data['statut'])
-                if statut.libelle_statut.lower() == "adopté" or statut.libelle_statut.lower() == "mort naturel" or statut.libelle_statut.lower() == "Mort euthanasie" or statut.libelle_statut.lower() == "transfert refuge":
+                if statut.libelle_statut.lower() == "adopté" or statut.libelle_statut.lower() == "mort naturel" or statut.libelle_statut.lower() == "Mort euthanasie" or statut.libelle_statut.lower() == "transfert refuge" or statut.libelle_statut.lower() == "chat libre":
                     try:
                         # Créer une archive
                         print(f"Tentative d'archivage pour l'animal: {instance.nom_animal}")
