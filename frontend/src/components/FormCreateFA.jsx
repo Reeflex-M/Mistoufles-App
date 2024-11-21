@@ -46,7 +46,6 @@ function FormCreateFA({ onClose }) {
         throw new Error("Erreur lors de la création du FA");
       }
 
-      alert("FA créé avec succès!");
       window.location.reload(); // Ajoutez cette ligne pour rafraîchir la page
       onClose();
     } catch (error) {

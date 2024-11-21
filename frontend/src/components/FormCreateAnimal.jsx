@@ -287,7 +287,6 @@ function FormCreateAnimal({ onClose }) {
         return;
       }
 
-      alert("Animal créé avec succès!");
       window.location.reload();
       onClose();
     } catch (error) {
