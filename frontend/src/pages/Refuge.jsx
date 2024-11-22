@@ -269,7 +269,6 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
       flex: 0.8,
       minWidth: 90,
       renderCell: (params) => {
-        // Modifier cette partie pour utiliser directement le libelle du statut
         const currentStatut =
           params.row.statut?.libelle_statut || params.row.statut_libelle || "";
 
@@ -402,23 +401,36 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
     try {
       const changedFields = {};
       Object.keys(newRow).forEach((key) => {
-        if (newRow[key] !== oldRow[key] && key !== "id") {
-          // Convertir les dates si nécessaire
-          if (
-            key === "date_naissance" ||
-            key === "primo_vacc" ||
-            key === "rappel_vacc" ||
-            key === "vermifuge" ||
-            key === "antipuce"
-          ) {
-            changedFields[key] = newRow[key];
-          } else {
-            changedFields[key] = newRow[key];
-          }
+        if (newRow[key] !== oldRow[key]) {
+          changedFields[key] = newRow[key];
         }
       });
 
-      if (Object.keys(changedFields).length === 0) return oldRow;
+      // Vérifier si le statut change pour "refuge"
+      if (newRow.statut?.libelle_statut.toLowerCase() === "refuge") {
+        // Supprimer immédiatement la ligne des deux états
+        setAnimals((prev) => prev.filter((animal) => animal.id !== newRow.id));
+        setFilteredAnimals((prev) =>
+          prev.filter((animal) => animal.id !== newRow.id)
+        );
+
+        // Envoyer la mise à jour au serveur
+        changedFields.statut = newRow.statut.id_statut;
+        await fetch(`http://127.0.0.1:8000/api/animal/${newRow.id}/`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify(changedFields),
+        });
+
+        return null; // Retourner null pour indiquer la suppression
+      }
+
+      if (newRow.statut?.id_statut !== oldRow.statut?.id_statut) {
+        changedFields.statut = newRow.statut.id_statut;
+      }
 
       const response = await fetch(
         `http://127.0.0.1:8000/api/animal/${newRow.id}/`,
@@ -432,14 +444,31 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
         }
       );
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.message === "Animal supprimé car adopté") {
-          return null;
-        }
-        return { ...newRow, ...data };
-      }
-      throw new Error("Échec de la mise à jour");
+      if (!response.ok) throw new Error("Échec de la mise à jour");
+
+      const data = await response.json();
+
+      const updatedRow = {
+        ...oldRow,
+        ...changedFields,
+        id: oldRow.id,
+        statut_libelle:
+          data.statut?.libelle_statut || newRow.statut?.libelle_statut,
+        statut: {
+          id_statut: data.statut?.id_statut || newRow.statut?.id_statut,
+          libelle_statut:
+            data.statut?.libelle_statut || newRow.statut?.libelle_statut,
+        },
+      };
+
+      setAnimals((prev) =>
+        prev.map((row) => (row.id === updatedRow.id ? updatedRow : row))
+      );
+      setFilteredAnimals((prev) =>
+        prev.map((row) => (row.id === updatedRow.id ? updatedRow : row))
+      );
+
+      return updatedRow;
     } catch (error) {
       console.error("Erreur lors de la mise à jour:", error);
       return oldRow;
@@ -458,7 +487,7 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
         />
       </div>
       <div
-        style={{ height: 700, width: "100%" }} // Modifié de 600 à 750 pour afficher plus de lignes
+        style={{ height: 700, width: "100%" }}
         className="border border-gray-200 rounded-lg overflow-hidden"
       >
         <DataGrid
@@ -480,11 +509,11 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
               fontSize: "0.85rem",
               fontWeight: "900",
               color: "#0f172a",
-              borderRight: "1px solid #cbd5e1", // Bordure plus visible
+              borderRight: "1px solid #cbd5e1",
               borderBottom: "2px solid #64748b",
               textTransform: "uppercase",
               letterSpacing: "0.025em",
-              padding: "8px 6px", // Légèrement plus large
+              padding: "8px 6px",
               textShadow: "0 0 1px rgba(15, 23, 42, 0.1)",
               "&:hover": {
                 backgroundColor: "#f1f5f9",
@@ -492,25 +521,25 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
             },
             "& .MuiDataGrid-cell": {
               fontSize: "0.75rem",
-              padding: "4px 6px", // Légèrement plus large
-              borderRight: "1px solid #cbd5e1", // Bordure plus visible
-              borderBottom: "1px solid #cbd5e1", // Bordure plus visible
+              padding: "4px 6px",
+              borderRight: "1px solid #cbd5e1",
+              borderBottom: "1px solid #cbd5e1",
             },
             "& .MuiDataGrid-row": {
               "&:nth-of-type(even)": {
                 backgroundColor: "#ffffff",
               },
               "&:nth-of-type(odd)": {
-                backgroundColor: "#e2e8f0", // Changé de f1f5f9 à e2e8f0 pour plus de contraste
+                backgroundColor: "#e2e8f0",
               },
               "&:hover": {
-                backgroundColor: "#cbd5e1 !important", // Changé pour un hover plus visible sur fond foncé
+                backgroundColor: "#cbd5e1 !important",
                 cursor: "pointer",
               },
             },
             "& .MuiDataGrid-columnHeaders": {
-              borderBottom: "2px solid #cbd5e1", // Bordure plus visible
-              backgroundColor: "#e2e8f0", // Slate-200 pour l'en-tête
+              borderBottom: "2px solid #cbd5e1",
+              backgroundColor: "#e2e8f0",
             },
             "& .MuiDataGrid-footerContainer": {
               borderTop: "2px solid #e2e8f0",
@@ -554,11 +583,15 @@ function Refuge() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Données brutes reçues:", data); // Debug
+          console.log("Données brutes reçues:", data);
 
-          const animalsWithId = data.map((animal) => {
-            console.log("FA data for animal:", animal.fa); // Debug
-            return {
+          // Filtrer pour exclure les animaux avec statut "refuge"
+          const nonRefugeAnimals = data
+            .filter(
+              (animal) =>
+                animal.statut?.libelle_statut.toLowerCase() !== "refuge"
+            )
+            .map((animal) => ({
               ...animal,
               id: animal.id_animal,
               statut_libelle: animal.statut?.libelle_statut || "",
@@ -571,12 +604,11 @@ function Refuge() {
               sexe_libelle: animal.sexe?.libelle_sexe || "",
               fa_libelle: animal.fa?.prenom_fa || "",
               id_fa: animal.fa?.id_fa || null,
-            };
-          });
+            }));
 
-          console.log("Données transformées:", animalsWithId); // Debug
-          setAnimals(animalsWithId);
-          setFilteredAnimals(animalsWithId);
+          console.log("Animaux non-refuge:", nonRefugeAnimals);
+          setAnimals(nonRefugeAnimals);
+          setFilteredAnimals(nonRefugeAnimals);
         } else {
           throw new Error(`Réponse non OK: ${response.status}`);
         }
@@ -598,6 +630,28 @@ function Refuge() {
           changedFields[key] = newRow[key];
         }
       });
+
+      // Vérifier si le statut change pour "refuge"
+      if (newRow.statut?.libelle_statut.toLowerCase() === "refuge") {
+        // Supprimer immédiatement la ligne des deux états
+        setAnimals((prev) => prev.filter((animal) => animal.id !== newRow.id));
+        setFilteredAnimals((prev) =>
+          prev.filter((animal) => animal.id !== newRow.id)
+        );
+
+        // Envoyer la mise à jour au serveur
+        changedFields.statut = newRow.statut.id_statut;
+        await fetch(`http://127.0.0.1:8000/api/animal/${newRow.id}/`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify(changedFields),
+        });
+
+        return null; // Retourner null pour indiquer la suppression
+      }
 
       if (newRow.statut?.id_statut !== oldRow.statut?.id_statut) {
         changedFields.statut = newRow.statut.id_statut;
@@ -663,6 +717,14 @@ function Refuge() {
       </div>
       <div className="flex-grow flex flex-col md:pl-64 relative z-0">
         <main className="flex-grow p-4 mt-16 md:mt-0">
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">
+              Famille d'accueil
+            </h1>
+            <p className="text-sm text-gray-500">
+              Gestion des animaux en famille d'accueil
+            </p>
+          </div>
           {isMainPage && (
             <AnimalTable
               animals={filteredAnimals}

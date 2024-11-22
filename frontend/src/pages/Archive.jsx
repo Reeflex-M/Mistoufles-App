@@ -105,24 +105,24 @@ const ArchiveTable = ({ archives }) => {
             },
             "& .MuiDataGrid-cell": {
               fontSize: "0.75rem",
-              padding: "4px 6px", // Légèrement plus large
-              borderRight: "1px solid #cbd5e1", // Bordure plus visible
-              borderBottom: "1px solid #cbd5e1", // Bordure plus visible
+              padding: "4px 6px",
+              borderRight: "1px solid #cbd5e1",
+              borderBottom: "1px solid #cbd5e1",
             },
             "& .MuiDataGrid-row": {
               "&:nth-of-type(even)": {
                 backgroundColor: "#ffffff",
               },
               "&:nth-of-type(odd)": {
-                backgroundColor: "#e2e8f0", // Changé de f1f5f9 à e2e8f0 pour plus de contraste
+                backgroundColor: "#e2e8f0",
               },
               "&:hover": {
-                backgroundColor: "#cbd5e1 !important", // Changé pour un hover plus visible sur fond foncé
+                backgroundColor: "#cbd5e1 !important",
                 cursor: "pointer",
               },
             },
             "& .MuiDataGrid-columnHeaders": {
-              borderBottom: "2px solid #cbd5e1", // Bordure plus visible
+              borderBottom: "2px solid #cbd5e1",
               backgroundColor: "#e2e8f0",
             },
             "& .MuiDataGrid-footerContainer": {
@@ -180,7 +180,7 @@ function Archive() {
       <div className="flex-grow flex flex-col md:pl-64 relative z-0">
         <main className="flex-grow p-4 mt-16 md:mt-0">
           {" "}
-          {/* Ajout de mt-16 en mobile */}
+          {/* Ajout de mt-16 en mobile pour éviter que le contenu ne soit caché par le Navbar */}
           <h1 className="text-2xl font-bold mb-6">Archives</h1>
           <ArchiveTable archives={archives} />
         </main>

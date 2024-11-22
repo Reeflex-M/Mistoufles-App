@@ -90,9 +90,9 @@ function Stats() {
         .length
     );
     console.log(
-      "Mort naturel:",
+      "Mort naturelle:",
       archiveData.filter(
-        (item) => item.statut?.libelle_statut === "mort naturel"
+        (item) => item.statut?.libelle_statut === "mort naturelle"
       ).length
     );
     console.log(
@@ -130,7 +130,7 @@ function Stats() {
           ).length,
           archiveData.filter(
             (item) =>
-              item.statut?.libelle_statut?.toLowerCase() === "mort naturel" &&
+              item.statut?.libelle_statut?.toLowerCase() === "mort naturelle" &&
               (selectedYear === "Global" ||
                 new Date(item.created_at).getFullYear() ===
                   Number(selectedYear))
@@ -262,39 +262,107 @@ function Stats() {
     ],
   };
 
-  // Préparation des données pour le graphique des adoptions par mois
+  // Remplacer la fonction getMonthlyAdoptions par celle-ci
   const getMonthlyAdoptions = () => {
-    const monthlyData = {};
+    if (selectedYear === "Global") {
+      return {
+        labels: [],
+        datasets: [
+          {
+            label: "Nombre d'adoptions",
+            data: [],
+            backgroundColor: "#60a5fa",
+            borderColor: "#3b82f6",
+            borderWidth: 1,
+          },
+        ],
+      };
+    }
+
+    const monthsData = new Array(12).fill(0);
+    const monthNames = [
+      "Janvier",
+      "Février",
+      "Mars",
+      "Avril",
+      "Mai",
+      "Juin",
+      "Juillet",
+      "Août",
+      "Septembre",
+      "Octobre",
+      "Novembre",
+      "Décembre",
+    ];
+
     archiveData
-      .filter((item) => {
-        if (
+      .filter(
+        (item) =>
           item.statut?.libelle_statut?.toLowerCase() === "adopté" &&
-          item.created_at
-        ) {
-          const itemYear = new Date(item.created_at).getFullYear();
-          return selectedYear === "Global" || itemYear === Number(selectedYear);
-        }
-        return false;
-      })
+          new Date(item.created_at).getFullYear() === Number(selectedYear)
+      )
       .forEach((item) => {
-        const date = new Date(item.created_at);
-        const month = date.getMonth() + 1;
-        const year = date.getFullYear();
-        const label =
-          selectedYear === "Global"
-            ? `${month}/${year}`
-            : `${month}/${selectedYear}`;
-        monthlyData[label] = (monthlyData[label] || 0) + 1;
+        const month = new Date(item.created_at).getMonth();
+        monthsData[month]++;
       });
 
     return {
-      labels: Object.keys(monthlyData),
+      labels: monthNames,
       datasets: [
         {
           label: "Nombre d'adoptions",
-          data: Object.values(monthlyData),
+          data: monthsData,
           backgroundColor: "#60a5fa",
           borderColor: "#3b82f6",
+          borderWidth: 1,
+        },
+      ],
+    };
+  };
+
+  // Ajouter cette nouvelle fonction après getMonthlyAdoptions
+  const getYearlyAdoptions = () => {
+    // Si une année spécifique est sélectionnée
+    if (selectedYear !== "Global") {
+      const count = archiveData.filter(
+        (item) =>
+          item.statut?.libelle_statut?.toLowerCase() === "adopté" &&
+          new Date(item.created_at).getFullYear() === Number(selectedYear)
+      ).length;
+
+      return {
+        labels: [selectedYear.toString()],
+        datasets: [
+          {
+            label: "Nombre d'adoptions",
+            data: [count],
+            backgroundColor: "#4ade80",
+            borderColor: "#22c55e",
+            borderWidth: 1,
+          },
+        ],
+      };
+    }
+
+    // Si "Global" est sélectionné - afficher toutes les années
+    const yearlyData = {};
+    archiveData
+      .filter((item) => item.statut?.libelle_statut?.toLowerCase() === "adopté")
+      .forEach((item) => {
+        const year = new Date(item.created_at).getFullYear();
+        yearlyData[year] = (yearlyData[year] || 0) + 1;
+      });
+
+    const sortedYears = Object.keys(yearlyData).sort();
+
+    return {
+      labels: sortedYears,
+      datasets: [
+        {
+          label: "Nombre d'adoptions",
+          data: sortedYears.map((year) => yearlyData[year]),
+          backgroundColor: "#4ade80",
+          borderColor: "#22c55e",
           borderWidth: 1,
         },
       ],
@@ -351,25 +419,14 @@ function Stats() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Graphique des motifs d'archivage */}
+            {/* Graphique des adoptions par année */}
             <div className="bg-white p-6 rounded-lg shadow">
               <h2 className="text-xl font-semibold mb-4">
-                Répartition des motifs d'archivage
+                Adoptions par année
               </h2>
-              <div className="h-[300px] flex justify-center">
-                <Pie
-                  data={motifData}
-                  options={{ maintainAspectRatio: false }}
-                />
-              </div>
-            </div>
-
-            {/* Graphique des adoptions par mois */}
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4">Adoptions par mois</h2>
               <div className="h-[300px]">
                 <Bar
-                  data={getMonthlyAdoptions()}
+                  data={getYearlyAdoptions()}
                   options={{
                     maintainAspectRatio: false,
                     scales: {
@@ -380,7 +437,57 @@ function Stats() {
                         },
                       },
                     },
+                    plugins: {
+                      title: {
+                        display: true,
+                        text: "Évolution des adoptions par année",
+                      },
+                    },
                   }}
+                />
+              </div>
+            </div>
+
+            {/* Graphique des adoptions par mois - Conditionnel */}
+            {selectedYear !== "Global" && (
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h2 className="text-xl font-semibold mb-4">
+                  Adoptions par mois
+                </h2>
+                <div className="h-[300px]">
+                  <Bar
+                    data={getMonthlyAdoptions()}
+                    options={{
+                      maintainAspectRatio: false,
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                          ticks: {
+                            stepSize: 1,
+                          },
+                        },
+                      },
+                      plugins: {
+                        title: {
+                          display: true,
+                          text: `Adoptions par mois en ${selectedYear}`,
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Graphique des motifs d'archivage */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold mb-4">
+                Répartition des motifs d'archivage
+              </h2>
+              <div className="h-[300px] flex justify-center">
+                <Pie
+                  data={motifData}
+                  options={{ maintainAspectRatio: false }}
                 />
               </div>
             </div>

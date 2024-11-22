@@ -6,12 +6,12 @@ import { ACCESS_TOKEN } from "../constants";
 import axios from "axios";
 import PropTypes from "prop-types";
 
-// Nouveau composant NoteDialog
+//composant NoteDialog
 const NoteDialog = ({ isOpen, onClose, note, onSave }) => {
-  const [noteText, setNoteText] = useState(note || ""); // Initialisation avec une chaîne vide si note est null
+  const [noteText, setNoteText] = useState(note || "");
 
   useEffect(() => {
-    setNoteText(note || ""); // Mise à jour avec une chaîne vide si note est null
+    setNoteText(note || "");
   }, [note]);
 
   const handleSave = () => {
@@ -69,7 +69,7 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
   const handleNoteClick = (id, note) => {
     setSelectedNote({
       id,
-      note: note || "", // S'assurer que la note n'est jamais null
+      note: note || "",
     });
     setIsNoteDialogOpen(true);
   };
@@ -154,11 +154,11 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
     },
   ].map((column) => ({
     ...column,
-    editable: column.editable !== false, // Garde l'état editable existant si défini
+    editable: column.editable !== false,
     headerClassName: "super-app-theme--header",
     headerAlign: "center",
     align: "center",
-    // N'applique le renderCell par défaut que si la colonne n'a pas déjà un renderCell personnalisé
+    // N'applique le renderCell par défaut que si la colderCell personnalisé
     ...(column.renderCell
       ? {}
       : {
@@ -210,11 +210,11 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
               fontSize: "0.85rem",
               fontWeight: "900",
               color: "#0f172a",
-              borderRight: "1px solid #cbd5e1", // Bordure plus visible
+              borderRight: "1px solid #cbd5e1",
               borderBottom: "2px solid #64748b",
               textTransform: "uppercase",
               letterSpacing: "0.025em",
-              padding: "8px 6px", // Légèrement plus large
+              padding: "8px 6px",
               textShadow: "0 0 1px rgba(15, 23, 42, 0.1)",
               "&:hover": {
                 backgroundColor: "#f1f5f9",
@@ -222,24 +222,24 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
             },
             "& .MuiDataGrid-cell": {
               fontSize: "0.75rem",
-              padding: "4px 6px", // Légèrement plus large
-              borderRight: "1px solid #cbd5e1", // Bordure plus visible
-              borderBottom: "1px solid #cbd5e1", // Bordure plus visible
+              padding: "4px 6px",
+              borderRight: "1px solid #cbd5e1",
+              borderBottom: "1px solid #cbd5e1",
             },
             "& .MuiDataGrid-row": {
               "&:nth-of-type(even)": {
                 backgroundColor: "#ffffff",
               },
               "&:nth-of-type(odd)": {
-                backgroundColor: "#e2e8f0", // Changé de f1f5f9 à e2e8f0 pour plus de contraste
+                backgroundColor: "#e2e8f0",
               },
               "&:hover": {
-                backgroundColor: "#cbd5e1 !important", // Changé pour un hover plus visible sur fond foncé
+                backgroundColor: "#cbd5e1 !important",
                 cursor: "pointer",
               },
             },
             "& .MuiDataGrid-columnHeaders": {
-              borderBottom: "2px solid #cbd5e1", // Bordure plus visible
+              borderBottom: "2px solid #cbd5e1",
               backgroundColor: "#e2e8f0",
             },
             "& .MuiDataGrid-footerContainer": {
@@ -358,13 +358,18 @@ function Benevole() {
       </div>
       <div className="flex-grow flex flex-col md:pl-64 relative z-0">
         <main className="flex-grow p-4 mt-16 md:mt-0">
-          {" "}
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">Bénévole</h1>
+            <p className="text-sm text-gray-500">
+              Gestion des bénévoles de l'association
+            </p>
+          </div>{" "}
           {/* Ajout de mt-16 en mobile */}
           {isMainPage && (
             <BenevoleTable
               fas={filteredFas}
               onRowUpdate={handleRowUpdate}
-              setFilteredFas={setFilteredFas} // Ajouter cette prop
+              setFilteredFas={setFilteredFas}
             />
           )}
         </main>
