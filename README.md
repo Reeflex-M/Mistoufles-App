@@ -1,34 +1,49 @@
-﻿# 🐱 Mistoufles App
+﻿# 🐱 Mistoufles - Gestion de Refuge / Bénécole / Famille d'accueil
 
-Application de gestion pour refuge animalier spécialisé dans l'accueil des chats.
+<div align="center">
+  <img src="path/to/your/logo.png" alt="Mistoufles Logo" width="200"/>
+  
+  [![Status](https://img.shields.io/badge/status-active-success.svg)]()
+  [![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
+</div>
 
-## 📋 Fonctionnalités
+## 📖 À propos
 
-- **Gestion du refuge**
+Mistoufles est une application web moderne dédiée à une gestion complète d'un refuge pour animaux. Notre solution simplifie le quotidien des associations de protection animale en offrant une interface intuitive et des outils performants.
 
-  - Vue d'ensemble des animaux
-  - Suivi des entrées/sorties
-  - Gestion des adoptions
+## ✨ Points Forts
 
-- **Chatterie**
+🏠 **Gestion Intuitive du Refuge**
 
-  - Suivi des pensionnaires
-  - Fiches individuelles
-  - Suivi médical
+- Tableau de bord centralisé
+- Suivi en temps réel des pensionnaires
+- Gestion optimisée des entrées/sorties
+- Processus d'adoption simplifié
 
-- **Gestion des bénévoles**
+🐈 **Suivi des Chats**
 
-  - Planning des permanences
-  - Coordination des familles d'accueil
-  - Gestion des disponibilités
+- Fiches détaillées par chat
+- Planning des soins
+- Suivi comportemental
+- Albums photos
 
-- **Statistiques**
-  - Tableaux de bord
-  - Rapports d'activité
-  - Indicateurs clés
+👥 **Gestion des Bénévoles**
 
-## 🚀 Installation
+- Réseau des familles d'accueil
+- Informations de contact
 
-![image](https://github.com/user-attachments/assets/fa206fee-d453-4ab3-a5ce-f3fc85654761)
-python manage.py runserver
-npm run dev
+📊 **Analyse et Rapports**
+
+- Statistiques détaillées
+- Rapports personnalisables
+- Indicateurs de performance
+
+## 🛠️ Installation
+
+### Prérequis
+
+- Python 3.8+
+- Node.js 14+
+- PostgreSQL
+
+### Démarrage rapide
