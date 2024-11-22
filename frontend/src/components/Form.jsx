@@ -4,7 +4,7 @@ import api from "../api";
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import "../index.css";
-import { PawPrint, Cat } from "lucide-react";
+import { Cat } from "lucide-react";
 
 function Form({ route, method }) {
   const [username, setUsername] = useState("");
@@ -35,32 +35,14 @@ function Form({ route, method }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center p-4">
-      <div className="absolute top-10 left-10 animate-bounce">
-        <PawPrint
-          size={32}
-          className="text-amber-600 transform rotate-[-45deg]"
-        />
-      </div>
-      <div className="absolute bottom-10 right-10 animate-bounce delay-100">
-        <PawPrint
-          size={32}
-          className="text-amber-600 transform rotate-[45deg]"
-        />
-      </div>
-
+    <div className="min-h-screen bg-violet-50 flex items-center justify-center p-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6 relative overflow-hidden"
+        className="w-full max-w-md bg-white rounded-lg shadow-md p-8 space-y-8"
       >
-        {/* Décoration d'arrière-plan */}
-        <div className="absolute -right-6 -top-6 text-amber-100 transform rotate-12">
-          <PawPrint size={64} />
-        </div>
-
         <div className="flex items-center justify-center gap-3 mb-8">
-          <Cat size={32} className="text-amber-600" />
-          <h1 className="text-3xl font-bold text-center text-amber-600">
+          <Cat size={28} className="text-violet-600" />
+          <h1 className="text-2xl font-medium text-center text-violet-900">
             Connexion Mistoufles
           </h1>
         </div>
@@ -72,23 +54,11 @@ function Form({ route, method }) {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="peer w-full px-4 py-3 rounded-lg border border-amber-200 
-                                    placeholder-transparent focus:outline-none focus:border-amber-500 
-                                    focus:ring-2 focus:ring-amber-200 transition-all duration-300
-                                    bg-amber-50"
-              placeholder="Username"
-            />
-            <label
-              htmlFor="username"
-              className="absolute left-4 -top-6 text-sm text-amber-700
-                                    peer-placeholder-shown:text-base peer-placeholder-shown:text-amber-400 
-                                    peer-placeholder-shown:top-3 transition-all duration-300"
-            >
-              Nom d&apos;utilisateur
-            </label>
-            <PawPrint
-              size={16}
-              className="absolute right-4 top-4 text-amber-400"
+              className="w-full px-4 py-2 rounded-md border border-violet-200 
+                        focus:outline-none focus:border-violet-500 
+                        focus:ring-1 focus:ring-violet-200
+                        bg-white"
+              placeholder="Nom d'utilisateur"
             />
           </div>
 
@@ -98,51 +68,34 @@ function Form({ route, method }) {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="peer w-full px-4 py-3 rounded-lg border border-amber-200 
-                                    placeholder-transparent focus:outline-none focus:border-amber-500 
-                                    focus:ring-2 focus:ring-amber-200 transition-all duration-300
-                                    bg-amber-50"
-              placeholder="Password"
+              className="w-full px-4 py-2 rounded-md border border-violet-200 
+                        focus:outline-none focus:border-violet-500 
+                        focus:ring-1 focus:ring-violet-200
+                        bg-white"
+              placeholder="Mot de passe"
             />
-            <label
-              htmlFor="password"
-              className="absolute left-4 -top-6 text-sm text-amber-700
-                                    peer-placeholder-shown:text-base peer-placeholder-shown:text-amber-400 
-                                    peer-placeholder-shown:top-3 transition-all duration-300"
-            >
-              Mot de passe
-            </label>
           </div>
         </div>
 
         <button
           type="submit"
-          className="group w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold 
-                             py-3 px-4 rounded-lg hover:from-amber-600 hover:to-orange-600 
-                             focus:outline-none focus:ring-2 focus:ring-amber-500 
-                             focus:ring-offset-2 transform transition-all duration-300 
-                             hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg
-                             relative overflow-hidden"
+          className="w-full bg-violet-600 text-white font-medium 
+                    py-2 px-4 rounded-md hover:bg-violet-700 
+                    focus:outline-none focus:ring-2 focus:ring-violet-500 
+                    focus:ring-offset-2 transition-colors duration-200"
           disabled={loading}
         >
-          <span className="flex items-center justify-center gap-2">
-            {loading ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
-            ) : (
-              <>
-                <PawPrint
-                  size={20}
-                  className="transform group-hover:rotate-12 transition-transform duration-300"
-                />
-                {name}
-              </>
-            )}
-          </span>
+          {loading ? (
+            <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mx-auto" />
+          ) : (
+            name
+          )}
         </button>
       </form>
     </div>
   );
 }
+
 Form.propTypes = {
   route: PropTypes.string.isRequired,
   method: PropTypes.oneOf(["login", "register"]).isRequired,
