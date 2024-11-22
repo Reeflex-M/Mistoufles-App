@@ -1,7 +1,7 @@
 ﻿# 🐱 Mistoufles - Gestion de Refuge / Bénécole / Famille d'accueil
 
 <div align="center">
-  <img src="path/to/your/logo.png" alt="Mistoufles Logo" width="200"/>
+  <img src="frontend/public/logo.png" alt="Mistoufles Logo" width="200"/>
   
   [![Status](https://img.shields.io/badge/status-active-success.svg)]()
   [![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
