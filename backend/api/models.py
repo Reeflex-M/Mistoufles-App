@@ -1,6 +1,9 @@
+import os
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 class Animal(models.Model):
     id_animal = models.AutoField(primary_key=True)
@@ -14,7 +17,6 @@ class Animal(models.Model):
     antipuce = models.DateField(null=True, blank=True)
     sterilise = models.BooleanField(default=False, null=True, blank=True)
     biberonnage = models.BooleanField(default=False, null=True, blank=True)
-    images = models.ManyToManyField('Image', blank=True, related_name='animals')
     note = models.TextField(null=True, blank=True)
     statut = models.ForeignKey('Statut', on_delete=models.SET_NULL, null=True, blank=True)
     provenance = models.ForeignKey('Provenance', on_delete=models.SET_NULL, null=True, blank=True)
@@ -86,9 +88,24 @@ class Archive(models.Model):
 
 class Image(models.Model):
     id_image = models.AutoField(primary_key=True)
-    animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name='animal_images')
+    animal_reference = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name='image_set')  # Renamed from 'animal' to 'animal_reference'
     image = models.ImageField(upload_to='animaux/')
-    description = models.CharField(max_length=255, blank=True)
+    date_upload = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.animal.nom_animal} - {self.image.name}"
+        return f"{self.animal_reference.nom_animal} - {self.id_image}"
+
+    def delete(self, *args, **kwargs):
+        # Supprime le fichier physique avant de supprimer l'objet
+        if self.image:
+            if os.path.isfile(self.image.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
+
+@receiver(pre_delete, sender=Animal)
+def delete_animal_images(sender, instance, **kwargs):
+    # Récupère toutes les images avant de les supprimer
+    images = Image.objects.filter(animal_reference=instance)
+    for image in images:
+        # La méthode delete() surchargée sera appelée pour chaque image
+        image.delete()

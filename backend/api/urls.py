@@ -16,4 +16,6 @@ urlpatterns = [
     path('animal/sexe/', SexeList.as_view(), name='sexe-list'),
     path('animal/categorie/', CategorieList.as_view(), name='categorie-list'),
     path('animal/archive/', views.AnimalArchiveList.as_view(), name='animal-archive'),
+    path('animal/<int:pk>/images/', views.AnimalImagesView.as_view(), name='animal-images'),
+    path('animal/image/<int:pk>/', views.ImageDeleteView.as_view(), name='image-delete'),
 ]

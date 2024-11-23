@@ -5,7 +5,8 @@ from .serializers import UserSerializer, AnimalSerializer, FASerializer, UserSer
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
-from .models import Animal, FA, Statut, Provenance, Sexe, Categorie, Archive
+from .models import Animal, FA, Statut, Provenance, Sexe, Categorie, Archive, Image
+from rest_framework.parsers import MultiPartParser, FormParser
 
 #ANIMAL
 class AnimalListCreate(generics.ListCreateAPIView):
@@ -62,7 +63,7 @@ class AnimalUpdate(generics.UpdateAPIView):
         if 'statut' in request.data:
             try:
                 statut = Statut.objects.get(id_statut=request.data['statut'])
-                if statut.libelle_statut.lower() == "adopté" or statut.libelle_statut.lower() == "mort naturelle" or statut.libelle_statut.lower() == "Mort euthanasie" or statut.libelle_statut.lower() == "transfert refuge" or statut.libelle_statut.lower() == "chat libre":
+                if statut.libelle_statut.lower() in ["adopté", "mort naturelle", "mort euthanasie", "transfert refuge", "chat libre"]:
                     try:
                         # Créer une archive
                         print(f"Tentative d'archivage pour l'animal: {instance.nom_animal}")
@@ -83,6 +84,9 @@ class AnimalUpdate(generics.UpdateAPIView):
                             fa=instance.fa
                         )
                         print(f"Archive créée avec succès, ID: {archive.id_animal}")
+                        
+                        # Supprimer les images avant de supprimer l'animal
+                        Image.objects.filter(animal_reference=instance).delete()
                         
                         # Forcer la suppression de l'instance
                         Animal.objects.filter(pk=instance.pk).delete()
@@ -116,8 +120,48 @@ class AnimalArchiveList(generics.ListAPIView):
             'statut', 'provenance', 'categorie', 'sexe', 'fa'
         ).all()
 
+class AnimalImagesView(generics.GenericAPIView):
+    parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request, pk):
+        try:
+            # Modifié pour utiliser animal_reference au lieu de animal_id
+            images = Image.objects.filter(animal_reference_id=pk)
+            data = [{
+                'id': img.id_image,
+                'url': request.build_absolute_uri(img.image.url),
+                'date': img.date_upload
+            } for img in images]
+            return Response(data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=400)
 
+    def post(self, request, pk):
+        try:
+            animal = Animal.objects.get(id_animal=pk)
+            image = request.FILES.get('image')
+            if not image:
+                return Response({'error': 'No image provided'}, status=400)
+            
+            new_image = Image.objects.create(
+                animal_reference=animal,  # Modifié ici
+                image=image
+            )
+            return Response({
+                'id': new_image.id_image,
+                'url': request.build_absolute_uri(new_image.image.url),
+                'date': new_image.date_upload
+            })
+        except Animal.DoesNotExist:
+            return Response({'error': 'Animal not found'}, status=404)
+        except Exception as e:
+            return Response({'error': str(e)}, status=400)
+
+class ImageDeleteView(generics.DestroyAPIView):
+    queryset = Image.objects.all()
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
 
 #FA
 class FAListCreate(generics.ListCreateAPIView):

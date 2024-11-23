@@ -10,6 +10,8 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import ImageIcon from "@mui/icons-material/Image";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 // Popup Onclick fa_libelle
 const FaDialog = ({ open, onClose, faData }) => {
@@ -118,6 +120,260 @@ const FaDialog = ({ open, onClose, faData }) => {
   );
 };
 
+// Ajouter ce nouveau composant pour la popup d'images
+const ImageDialog = ({ open, onClose, animalId, animalName }) => {
+  const [images, setImages] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [fullscreenImage, setFullscreenImage] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const accessToken = localStorage.getItem(ACCESS_TOKEN);
+
+  const fetchImages = async () => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/animal/${animalId}/images/`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setImages(data);
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement des images:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (open && animalId) {
+      fetchImages();
+    }
+  }, [open, animalId]);
+
+  const handleUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+    setUploading(true);
+
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/animal/${animalId}/images/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            // Retirez Content-Type pour laisser le navigateur le définir avec le bon boundary
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Upload failed");
+      }
+
+      const newImage = await response.json();
+      setImages((prev) => [...prev, newImage]);
+    } catch (error) {
+      console.error("Erreur lors de l'upload:", error);
+      alert("Erreur lors de l'upload de l'image");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = async (imageId) => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/animal/image/${imageId}/`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+
+      if (response.ok) {
+        setImages((prev) => prev.filter((img) => img.id !== imageId));
+      }
+    } catch (error) {
+      console.error("Erreur lors de la suppression:", error);
+    }
+  };
+
+  const handleImageClick = (img) => {
+    setFullscreenImage(img);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length === 0) return;
+
+    // Gérer chaque fichier
+    for (const file of files) {
+      if (!file.type.startsWith("image/")) continue;
+
+      const formData = new FormData();
+      formData.append("image", file);
+      setUploading(true);
+
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/animal/${animalId}/images/`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            body: formData,
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Upload failed");
+        }
+
+        const newImage = await response.json();
+        setImages((prev) => [...prev, newImage]);
+      } catch (error) {
+        console.error("Erreur lors de l'upload:", error);
+        alert("Erreur lors de l'upload de l'image");
+      } finally {
+        setUploading(false);
+      }
+    }
+  };
+
+  return (
+    <>
+      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+        <DialogTitle className="bg-gray-50 border-b px-6 py-4">
+          Photos de {animalName}
+        </DialogTitle>
+        <DialogContent className="p-6">
+          <div
+            className={`space-y-4 ${
+              isDragging
+                ? "bg-blue-50 border-2 border-dashed border-blue-400"
+                : ""
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <div className="text-center p-4">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleUpload}
+                className="hidden"
+                id="image-upload"
+                disabled={uploading}
+                multiple
+              />
+              <label
+                htmlFor="image-upload"
+                className="inline-block px-4 py-2 bg-blue-500 text-white rounded-md cursor-pointer hover:bg-blue-600"
+              >
+                {uploading ? "Upload en cours..." : "Ajouter une photo"}
+              </label>
+              <p className="mt-2 text-sm text-gray-500">
+                ou glissez-déposez vos images ici
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 mt-4">
+              {images.map((img) => (
+                <div key={img.id} className="relative group">
+                  <img
+                    src={img.url}
+                    alt=""
+                    className="w-full h-48 object-cover rounded-lg cursor-pointer transition-transform hover:scale-105"
+                    onClick={() => handleImageClick(img)}
+                  />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation(); // Empêche le déclenchement du onClick de l'image
+                      handleDelete(img.id);
+                    }}
+                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <DeleteIcon />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions className="px-6 py-4 border-t">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+          >
+            Fermer
+          </button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog plein écran pour l'image */}
+      <Dialog
+        open={!!fullscreenImage}
+        onClose={() => setFullscreenImage(null)}
+        maxWidth="xl"
+        fullWidth
+      >
+        <DialogContent className="relative p-0 bg-black flex items-center justify-center min-h-[80vh]">
+          {fullscreenImage && (
+            <>
+              <img
+                src={fullscreenImage.url}
+                alt=""
+                className="max-h-[80vh] max-w-full object-contain"
+              />
+              <button
+                onClick={() => setFullscreenImage(null)}
+                className="absolute top-4 right-4 text-white bg-gray-800 rounded-full p-2 hover:bg-gray-700 transition-colors"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
 //DataGrid
 const AnimalTable = ({ animals, onRowUpdate }) => {
   const accessToken = localStorage.getItem(ACCESS_TOKEN);
@@ -125,6 +381,8 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
   const [faDialogOpen, setFaDialogOpen] = useState(false);
   const [selectedFa, setSelectedFa] = useState(null);
   const [statuts, setStatuts] = useState([]);
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const [selectedAnimal, setSelectedAnimal] = useState(null);
 
   const handleFaClick = async (faId) => {
     try {
@@ -149,6 +407,14 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
     } catch (error) {
       console.error("Erreur lors de la récupération des données FA:", error);
     }
+  };
+
+  const handleImageDialog = (animal) => {
+    setSelectedAnimal({
+      id: animal.id_animal, // Assurez-vous d'utiliser id_animal
+      nom_animal: animal.nom_animal,
+    });
+    setImageDialogOpen(true);
   };
 
   useEffect(() => {
@@ -182,7 +448,34 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
   );
 
   const columns = [
-    { field: "nom_animal", headerName: "Nom", flex: 0.8, minWidth: 100 },
+    {
+      field: "nom_animal",
+      headerName: "Nom",
+      flex: 0.8,
+      minWidth: 100,
+      renderCell: (params) => (
+        <div
+          className="w-[calc(100%-8px)] mx-auto cursor-pointer group rounded-md hover:bg-indigo-50 
+        transition-all duration-200 flex items-center justify-between gap-1 px-2 py-0.5"
+          onClick={() => handleImageDialog(params.row)}
+        >
+          <span className="font-medium text-gray-700 group-hover:text-indigo-600 truncate">
+            {params.value}
+          </span>
+          <div
+            className="bg-indigo-100 w-5 h-5 rounded-full flex items-center justify-center 
+          opacity-50 group-hover:opacity-100 transform group-hover:scale-110 transition-all duration-200"
+          >
+            <ImageIcon
+              sx={{
+                fontSize: 14,
+                color: "#4f46e5",
+              }}
+            />
+          </div>
+        </div>
+      ),
+    },
     {
       field: "date_arrivee",
       headerName: "Arrivée",
@@ -552,6 +845,12 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
         open={faDialogOpen}
         onClose={() => setFaDialogOpen(false)}
         faData={selectedFa}
+      />
+      <ImageDialog
+        open={imageDialogOpen}
+        onClose={() => setImageDialogOpen(false)}
+        animalId={selectedAnimal?.id}
+        animalName={selectedAnimal?.nom_animal}
       />
     </div>
   );
