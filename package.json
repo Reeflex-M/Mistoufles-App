@@ -1,7 +1,38 @@
 {
+  "name": "mistoufles-app",
+  "version": "1.0.0",
+  "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@heroicons/react": "^2.1.5",
+    "@mui/icons-material": "^6.1.8",
+    "@mui/material": "^6.1.6",
+    "@mui/x-data-grid": "^7.22.2",
+    "axios": "^1.7.7",
+    "chart.js": "^4.4.6",
+    "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.453.0",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.3.0",
+    "react-modal": "^3.16.1",
+    "react-router-dom": "^6.27.0"
+  },
   "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
     "autoprefixer": "^10.4.20",
+    "eslint": "^9.13.0",
+    "eslint-plugin-react": "^7.37.1",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.13",
+    "globals": "^15.11.0",
     "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.14"
+    "postcss-import": "^16.1.0",
+    "tailwindcss": "^3.4.14",
+    "vite": "^5.4.11"
   }
 }

@@ -7,7 +7,7 @@ import axios from "axios";
 import PropTypes from "prop-types";
 
 //composant NoteDialog
-const NoteDialog = ({ isOpen, onClose, note, onSave }) => {
+const NoteDialog = ({ isOpen, onClose, note = "", onSave }) => {
   const [noteText, setNoteText] = useState(note || "");
 
   useEffect(() => {
@@ -57,10 +57,6 @@ NoteDialog.propTypes = {
   onSave: PropTypes.func.isRequired,
 };
 
-NoteDialog.defaultProps = {
-  note: "",
-};
-
 const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
   const [searchText, setSearchText] = useState("");
   const [isNoteDialogOpen, setIsNoteDialogOpen] = useState(false);
@@ -98,6 +94,34 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
       }
     } catch (error) {
       console.error("Erreur lors de la mise à jour:", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce bénévole ?")) {
+      return;
+    }
+
+    try {
+      const response = await axios.delete(
+        `http://127.0.0.1:8000/api/fa/${id}/delete/`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`,
+          },
+        }
+      );
+
+      if (response.status === 204) {
+        setFilteredFas((prev) => prev.filter((row) => row.id !== id));
+      }
+    } catch (error) {
+      if (error.response?.status === 400) {
+        alert("Impossible de supprimer un bénévole qui a des animaux associés");
+      } else {
+        console.error("Erreur lors de la suppression:", error);
+        alert("Une erreur est survenue lors de la suppression");
+      }
     }
   };
 
@@ -152,6 +176,20 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
         </div>
       ),
     },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 100,
+      renderCell: (params) => (
+        <button
+          onClick={() => handleDelete(params.row.id)}
+          className="px-3 py-1 bg-red-100 text-red-700 hover:bg-red-200 rounded-md text-sm font-medium transition-colors"
+          title="Supprimer le bénévole"
+        >
+          Supprimer
+        </button>
+      ),
+    },
   ].map((column) => ({
     ...column,
     editable: column.editable !== false,
@@ -195,10 +233,10 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
           rows={filteredRows}
           columns={columns}
           initialState={{
-            pagination: { pageSize: 15 },
+            pagination: { paginationModel: { pageSize: 15 } },
             columns: { columnVisibilityModel: {} },
           }}
-          pageSizeOptions={[15, 30, 50]}
+          pageSizeOptions={[15, 30, 50, 100]}
           disableSelectionOnClick
           density="compact"
           processRowUpdate={onRowUpdate}
@@ -274,22 +312,23 @@ BenevoleTable.propTypes = {
 };
 
 function Benevole() {
-  // eslint-disable-next-line no-unused-vars
-  const [fas, setFas] = useState([]); // useful for tabs
-
+  const [fas, setFas] = useState([]);
   const [filteredFas, setFilteredFas] = useState([]);
+  const [fasWithoutAnimals, setFasWithoutAnimals] = useState([]); // Nouveau state
+  const [showOnlyUnassigned, setShowOnlyUnassigned] = useState(false); // Toggle pour filtrer
   const accessToken = localStorage.getItem(ACCESS_TOKEN);
   const location = useLocation();
 
   useEffect(() => {
-    const fetchFas = async () => {
+    const fetchAllData = async () => {
       try {
         if (!accessToken) {
           console.error("Pas de token d'accès");
           return;
         }
 
-        const response = await fetch("http://127.0.0.1:8000/api/fa/", {
+        // Fetch tous les FAs
+        const responseFas = await fetch("http://127.0.0.1:8000/api/fa/", {
           method: "GET",
           headers: {
             Accept: "application/json",
@@ -299,24 +338,54 @@ function Benevole() {
           credentials: "include",
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          const fasWithId = data.map((fa) => ({
+        // Fetch FAs sans animaux
+        const responseUnassigned = await fetch(
+          "http://127.0.0.1:8000/api/fa/unassigned/",
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+            credentials: "include",
+          }
+        );
+
+        if (responseFas.ok && responseUnassigned.ok) {
+          const allFasData = await responseFas.json();
+          const unassignedFasData = await responseUnassigned.json();
+
+          const fasWithId = allFasData.map((fa) => ({
             ...fa,
             id: fa.id_fa,
           }));
+
           setFas(fasWithId);
           setFilteredFas(fasWithId);
-        } else {
-          throw new Error(`Réponse non OK: ${response.status}`);
+          setFasWithoutAnimals(unassignedFasData);
         }
       } catch (error) {
         console.error("Erreur détaillée:", error);
       }
     };
 
-    fetchFas();
+    fetchAllData();
   }, [accessToken]);
+
+  // Ajouter cette fonction pour gérer le toggle
+  const handleToggleUnassigned = () => {
+    setShowOnlyUnassigned(!showOnlyUnassigned);
+    if (!showOnlyUnassigned) {
+      const unassignedWithId = fasWithoutAnimals.map((fa) => ({
+        ...fa,
+        id: fa.id_fa,
+      }));
+      setFilteredFas(unassignedWithId);
+    } else {
+      setFilteredFas(fas);
+    }
+  };
 
   const handleRowUpdate = async (newRow, oldRow) => {
     try {
@@ -361,16 +430,32 @@ function Benevole() {
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900">Bénévole</h1>
             <p className="text-sm text-gray-500">
-              Gestion des bénévoles de l'association
+              Gestion des bénévoles de l&apos;association
             </p>
           </div>{" "}
           {/* Ajout de mt-16 en mobile */}
           {isMainPage && (
-            <BenevoleTable
-              fas={filteredFas}
-              onRowUpdate={handleRowUpdate}
-              setFilteredFas={setFilteredFas}
-            />
+            <>
+              <div className="mb-4">
+                <button
+                  onClick={handleToggleUnassigned}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    showOnlyUnassigned
+                      ? "bg-purple-600 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  {showOnlyUnassigned
+                    ? "Voir tous les bénévoles"
+                    : "Voir les bénévoles sans animal"}
+                </button>
+              </div>
+              <BenevoleTable
+                fas={filteredFas}
+                onRowUpdate={handleRowUpdate}
+                setFilteredFas={setFilteredFas}
+              />
+            </>
           )}
         </main>
       </div>

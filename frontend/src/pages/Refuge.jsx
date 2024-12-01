@@ -12,6 +12,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import ImageIcon from "@mui/icons-material/Image";
 import DeleteIcon from "@mui/icons-material/Delete";
+import PropTypes from "prop-types";
 
 // Popup Onclick fa_libelle
 const FaDialog = ({ open, onClose, faData }) => {
@@ -374,8 +375,64 @@ const ImageDialog = ({ open, onClose, animalId, animalName }) => {
   );
 };
 
+//composant NoteDialog
+const NoteDialog = ({ isOpen, onClose, note = "", onSave }) => {
+  const [noteText, setNoteText] = useState(note || "");
+
+  useEffect(() => {
+    setNoteText(note || "");
+  }, [note]);
+
+  const handleSave = () => {
+    onSave(noteText);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black bg-opacity-50" onClick={onClose} />
+      <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 relative z-10">
+        <h2 className="text-xl font-bold mb-4">Modifier la note</h2>
+        <textarea
+          className="w-full h-48 p-2 border rounded-lg mb-4 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+          value={noteText}
+          onChange={(e) => setNoteText(e.target.value)}
+          placeholder="Ajoutez votre note ici..."
+        />
+        <div className="flex justify-end gap-2">
+          <button
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
+            onClick={onClose}
+          >
+            Annuler
+          </button>
+          <button
+            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
+            onClick={handleSave}
+          >
+            Enregistrer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+NoteDialog.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  note: PropTypes.string,
+  onSave: PropTypes.func.isRequired,
+};
+
 //DataGrid
-const AnimalTable = ({ animals, onRowUpdate }) => {
+const AnimalTable = ({
+  animals,
+  onRowUpdate,
+  setAnimals,
+  setFilteredAnimals,
+}) => {
   const accessToken = localStorage.getItem(ACCESS_TOKEN);
   const [searchText, setSearchText] = useState("");
   const [faDialogOpen, setFaDialogOpen] = useState(false);
@@ -383,6 +440,8 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
   const [statuts, setStatuts] = useState([]);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [selectedAnimal, setSelectedAnimal] = useState(null);
+  const [isNoteDialogOpen, setIsNoteDialogOpen] = useState(false);
+  const [selectedNote, setSelectedNote] = useState({ id: null, note: "" });
 
   const handleFaClick = async (faId) => {
     try {
@@ -415,6 +474,46 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
       nom_animal: animal.nom_animal,
     });
     setImageDialogOpen(true);
+  };
+
+  const handleNoteClick = (id, note) => {
+    setSelectedNote({
+      id,
+      note: note || "",
+    });
+    setIsNoteDialogOpen(true);
+  };
+
+  const handleNoteSave = async (newNote) => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/animal/${selectedNote.id}/`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ note: newNote }),
+        }
+      );
+
+      if (response.ok) {
+        setAnimals((prev) =>
+          prev.map((row) =>
+            row.id === selectedNote.id ? { ...row, note: newNote } : row
+          )
+        );
+        setFilteredAnimals((prev) =>
+          prev.map((row) =>
+            row.id === selectedNote.id ? { ...row, note: newNote } : row
+          )
+        );
+        setIsNoteDialogOpen(false);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour:", error);
+    }
   };
 
   useEffect(() => {
@@ -677,6 +776,29 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
         );
       },
     },
+    {
+      field: "note",
+      headerName: "Notes",
+      flex: 0.4,
+      minWidth: 80,
+      editable: false,
+      renderCell: (params) => (
+        <div className="flex items-center justify-center w-full">
+          <button
+            onClick={() => handleNoteClick(params.row.id, params.value)}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors
+              ${
+                params.value
+                  ? "bg-purple-100 text-purple-700 hover:bg-purple-200"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            title={params.value ? "Modifier la note" : "Ajouter une note"}
+          >
+            {params.value ? "Modifier" : "Ajouter"}
+          </button>
+        </div>
+      ),
+    },
   ].map((column) => ({
     ...column,
     editable:
@@ -770,6 +892,12 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
 
   return (
     <div className="space-y-4">
+      <NoteDialog
+        isOpen={isNoteDialogOpen}
+        onClose={() => setIsNoteDialogOpen(false)}
+        note={selectedNote.note}
+        onSave={handleNoteSave}
+      />
       <div className="flex">
         <input
           type="text"
@@ -854,6 +982,13 @@ const AnimalTable = ({ animals, onRowUpdate }) => {
       />
     </div>
   );
+};
+
+AnimalTable.propTypes = {
+  animals: PropTypes.array.isRequired,
+  onRowUpdate: PropTypes.func.isRequired,
+  setAnimals: PropTypes.func.isRequired,
+  setFilteredAnimals: PropTypes.func.isRequired,
 };
 
 function Refuge() {
@@ -1018,16 +1153,18 @@ function Refuge() {
         <main className="flex-grow p-4 mt-16 md:mt-0">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900">
-              Famille d'accueil
+              Famille d&apos;accueil
             </h1>
             <p className="text-sm text-gray-500">
-              Gestion des animaux en famille d'accueil
+              Gestion des animaux en famille d&apos;accueil
             </p>
           </div>
           {isMainPage && (
             <AnimalTable
               animals={filteredAnimals}
               onRowUpdate={handleRowUpdate}
+              setAnimals={setAnimals}
+              setFilteredAnimals={setFilteredAnimals}
             />
           )}
         </main>
