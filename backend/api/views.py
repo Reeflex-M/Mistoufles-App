@@ -203,9 +203,34 @@ class FADetail(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     lookup_field = 'pk'  #utilise id fa comme parametre de recherche
 
+class FAWithoutAnimalsView(generics.ListAPIView):
+    serializer_class = FASerializer
+    permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        # Récupère les FAs qui n'ont pas d'animaux associés
+        return FA.objects.filter(animal__isnull=True)
 
+class FADelete(generics.DestroyAPIView):
+    queryset = FA.objects.all()
+    serializer_class = FASerializer
+    permission_classes = [IsAuthenticated]
 
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            if instance.animal_set.exists():
+                return Response(
+                    {"error": "Impossible de supprimer un bénévole qui a des animaux associés"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 # Statut
 class StatutList(generics.ListAPIView):
@@ -230,11 +255,6 @@ class CategorieList(generics.ListAPIView):
     queryset = Categorie.objects.all()
     serializer_class = CategorieSerializer
     permission_classes = [IsAuthenticated]
-
-
-
-
-
 
 #USER
 class CreateUserView(generics.CreateAPIView):
