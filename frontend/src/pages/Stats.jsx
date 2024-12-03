@@ -34,7 +34,7 @@ function Stats() {
     const fetchArchiveData = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/api/animal/archive/",
+          `${import.meta.env.VITE_API_URL}/api/animal/archive/`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`,

@@ -1,5 +1,5 @@
+
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { DataGrid } from "@mui/x-data-grid";
 import { ACCESS_TOKEN } from "../constants";
@@ -7,14 +7,12 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import ImageIcon from "@mui/icons-material/Image";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PropTypes from "prop-types";
 
-// Popup Onclick fa_libelle
 const FaDialog = ({ open, onClose, faData }) => {
   return (
     <Dialog
@@ -37,7 +35,7 @@ const FaDialog = ({ open, onClose, faData }) => {
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-6">
             {/* Informations personnelles */}
-            <div className="space-y-4">
+            <div className="space-y-4"></div>
               <h3 className="text-sm uppercase tracking-wider text-gray-500 font-medium">
                 Coordonnées
               </h3>
@@ -85,7 +83,7 @@ const FaDialog = ({ open, onClose, faData }) => {
             </div>
 
             {/* Suivi */}
-            <div className="space-y-4">
+            <div className="space-y-4"></div>
               <h3 className="text-sm uppercase tracking-wider text-gray-500 font-medium">
                 Suivi médical
               </h3>
@@ -121,7 +119,6 @@ const FaDialog = ({ open, onClose, faData }) => {
   );
 };
 
-// Ajouter ce nouveau composant pour la popup d'images
 const ImageDialog = ({ open, onClose, animalId, animalName }) => {
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -167,7 +164,6 @@ const ImageDialog = ({ open, onClose, animalId, animalName }) => {
           method: "POST",
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            // Retirez Content-Type pour laisser le navigateur le définir avec le bon boundary
           },
           body: formData,
         }
@@ -227,7 +223,6 @@ const ImageDialog = ({ open, onClose, animalId, animalName }) => {
     const files = Array.from(e.dataTransfer.files);
     if (files.length === 0) return;
 
-    // Gérer chaque fichier
     for (const file of files) {
       if (!file.type.startsWith("image/")) continue;
 
@@ -264,7 +259,7 @@ const ImageDialog = ({ open, onClose, animalId, animalName }) => {
   };
 
   return (
-    <>
+    <></>
       <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
         <DialogTitle className="bg-gray-50 border-b px-6 py-4">
           Photos de {animalName}
@@ -312,7 +307,7 @@ const ImageDialog = ({ open, onClose, animalId, animalName }) => {
                   />
                   <button
                     onClick={(e) => {
-                      e.stopPropagation(); // Empêche le déclenchement du onClick de l'image
+                      e.stopPropagation();
                       handleDelete(img.id);
                     }}
                     className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
@@ -328,7 +323,7 @@ const ImageDialog = ({ open, onClose, animalId, animalName }) => {
           <button
             onClick={onClose}
             className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-          >
+          ></button>
             Fermer
           </button>
         </DialogActions>
@@ -352,7 +347,7 @@ const ImageDialog = ({ open, onClose, animalId, animalName }) => {
               <button
                 onClick={() => setFullscreenImage(null)}
                 className="absolute top-4 right-4 text-white bg-gray-800 rounded-full p-2 hover:bg-gray-700 transition-colors"
-              >
+              ></button>
                 <svg
                   className="w-6 h-6"
                   fill="none"
@@ -390,7 +385,7 @@ const NoteDialog = ({ isOpen, onClose, note = "", onSave }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center"></div>
       <div className="fixed inset-0 bg-black bg-opacity-50" onClick={onClose} />
       <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 relative z-10">
         <h2 className="text-xl font-bold mb-4">Modifier la note</h2>
@@ -426,13 +421,7 @@ NoteDialog.propTypes = {
   onSave: PropTypes.func.isRequired,
 };
 
-//DataGrid
-const AnimalTable = ({
-  animals,
-  onRowUpdate,
-  setAnimals,
-  setFilteredAnimals,
-}) => {
+const AnimalTable = ({ animals, onRowUpdate, setAnimals }) => {
   const accessToken = localStorage.getItem(ACCESS_TOKEN);
   const [searchText, setSearchText] = useState("");
   const [faDialogOpen, setFaDialogOpen] = useState(false);
@@ -443,10 +432,33 @@ const AnimalTable = ({
   const [isNoteDialogOpen, setIsNoteDialogOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState({ id: null, note: "" });
 
+  useEffect(() => {
+    const fetchStatuts = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/animal/statut/`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setStatuts(data);
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des statuts:", error);
+      }
+    };
+    fetchStatuts();
+  }, [accessToken]);
+
   const handleFaClick = async (faId) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/fa/`, {
-        method: "GET",
+        // Modifié l'URL
+        method: "GET", // Retour à GET
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -469,7 +481,7 @@ const AnimalTable = ({
 
   const handleImageDialog = (animal) => {
     setSelectedAnimal({
-      id: animal.id_animal, // Assurez-vous d'utiliser id_animal
+      id: animal.id_animal,
       nom_animal: animal.nom_animal,
     });
     setImageDialogOpen(true);
@@ -503,47 +515,12 @@ const AnimalTable = ({
             row.id === selectedNote.id ? { ...row, note: newNote } : row
           )
         );
-        setFilteredAnimals((prev) =>
-          prev.map((row) =>
-            row.id === selectedNote.id ? { ...row, note: newNote } : row
-          )
-        );
         setIsNoteDialogOpen(false);
       }
     } catch (error) {
       console.error("Erreur lors de la mise à jour:", error);
     }
   };
-
-  useEffect(() => {
-    const fetchStatuts = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/animal/statut/`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setStatuts(data);
-        }
-      } catch (error) {
-        console.error("Erreur lors de la récupération des statuts:", error);
-      }
-    };
-    fetchStatuts();
-  }, [accessToken]);
-
-  const filteredRows = animals.filter((row) =>
-    Object.values(row).some(
-      (value) =>
-        value &&
-        value.toString().toLowerCase().includes(searchText.toLowerCase())
-    )
-  );
 
   const columns = [
     {
@@ -556,7 +533,7 @@ const AnimalTable = ({
           className="w-[calc(100%-8px)] mx-auto cursor-pointer group rounded-md hover:bg-indigo-50 
         transition-all duration-200 flex items-center justify-between gap-1 px-2 py-0.5"
           onClick={() => handleImageDialog(params.row)}
-        >
+        ></div>
           <span className="font-medium text-gray-700 group-hover:text-indigo-600 truncate">
             {params.value}
           </span>
@@ -753,7 +730,7 @@ const AnimalTable = ({
             transition-all duration-200 cursor-pointer flex items-center gap-1 
             hover:shadow-sm active:bg-purple-200 group w-full justify-center"
             onClick={() => handleFaClick(params.row.id_fa)}
-          >
+          ></div>
             <span className="text-sm font-medium group-hover:text-gray-900">
               {params.value}
             </span>
@@ -811,89 +788,16 @@ const AnimalTable = ({
     align: "center",
   }));
 
-  const handleRowUpdate = async (newRow, oldRow) => {
-    try {
-      const changedFields = {};
-      Object.keys(newRow).forEach((key) => {
-        if (newRow[key] !== oldRow[key]) {
-          changedFields[key] = newRow[key];
-        }
-      });
-
-      // Vérifier si le statut change pour "refuge"
-      if (newRow.statut?.libelle_statut.toLowerCase() === "refuge") {
-        // Supprimer immédiatement la ligne des deux états
-        setAnimals((prev) => prev.filter((animal) => animal.id !== newRow.id));
-        setFilteredAnimals((prev) =>
-          prev.filter((animal) => animal.id !== newRow.id)
-        );
-
-        // Envoyer la mise à jour au serveur
-        changedFields.statut = newRow.statut.id_statut;
-        await fetch(
-          `${import.meta.env.VITE_API_URL}/api/animal/${newRow.id}/`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify(changedFields),
-          }
-        );
-
-        return null; // Retourner null pour indiquer la suppression
-      }
-
-      if (newRow.statut?.id_statut !== oldRow.statut?.id_statut) {
-        changedFields.statut = newRow.statut.id_statut;
-      }
-
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/animal/${newRow.id}/`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify(changedFields),
-        }
-      );
-
-      if (!response.ok) throw new Error("Échec de la mise à jour");
-
-      const data = await response.json();
-
-      const updatedRow = {
-        ...oldRow,
-        ...changedFields,
-        id: oldRow.id,
-        statut_libelle:
-          data.statut?.libelle_statut || newRow.statut?.libelle_statut,
-        statut: {
-          id_statut: data.statut?.id_statut || newRow.statut?.id_statut,
-          libelle_statut:
-            data.statut?.libelle_statut || newRow.statut?.libelle_statut,
-        },
-      };
-
-      setAnimals((prev) =>
-        prev.map((row) => (row.id === updatedRow.id ? updatedRow : row))
-      );
-      setFilteredAnimals((prev) =>
-        prev.map((row) => (row.id === updatedRow.id ? updatedRow : row))
-      );
-
-      return updatedRow;
-    } catch (error) {
-      console.error("Erreur lors de la mise à jour:", error);
-      return oldRow;
-    }
-  };
+  const filteredRows = animals.filter((row) =>
+    Object.values(row).some(
+      (value) =>
+        value &&
+        value.toString().toLowerCase().includes(searchText.toLowerCase())
+    )
+  );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4"></div>
       <NoteDialog
         isOpen={isNoteDialogOpen}
         onClose={() => setIsNoteDialogOpen(false)}
@@ -910,7 +814,7 @@ const AnimalTable = ({
         />
       </div>
       <div
-        style={{ height: 570, width: "100%" }}
+        style={{ height: 700, width: "100%" }}
         className="border border-gray-200 rounded-lg overflow-hidden"
       >
         <DataGrid
@@ -923,7 +827,21 @@ const AnimalTable = ({
           pageSizeOptions={[15, 30, 50]}
           disableSelectionOnClick
           density="compact"
-          processRowUpdate={onRowUpdate}
+          processRowUpdate={async (newRow, oldRow) => {
+            try {
+              const updatedRow = await onRowUpdate(newRow, oldRow);
+              if (updatedRow === null) {
+                return oldRow;
+              }
+              return updatedRow;
+            } catch (error) {
+              console.error("Erreur lors de la mise à jour:", error);
+              return oldRow;
+            }
+          }}
+          onProcessRowUpdateError={(error) => {
+            console.error("Erreur processRowUpdate:", error);
+          }}
           experimentalFeatures={{ newEditingApi: true }}
           sx={{
             backgroundColor: "white",
@@ -990,14 +908,11 @@ AnimalTable.propTypes = {
   animals: PropTypes.array.isRequired,
   onRowUpdate: PropTypes.func.isRequired,
   setAnimals: PropTypes.func.isRequired,
-  setFilteredAnimals: PropTypes.func.isRequired,
 };
 
-function Refuge() {
+function Chatterie() {
   const [animals, setAnimals] = useState([]);
-  const [filteredAnimals, setFilteredAnimals] = useState([]);
   const accessToken = localStorage.getItem(ACCESS_TOKEN);
-  const location = useLocation();
 
   useEffect(() => {
     const fetchAnimals = async () => {
@@ -1007,33 +922,34 @@ function Refuge() {
           return;
         }
 
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/animal/`,
-          {
-            method: "GET",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/animal/`, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          credentials: "include",
+        });
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Données brutes reçues:", data);
+          console.log("Données brutes:", data);
 
-          // Filtrer pour exclure les animaux avec statut "refuge"
-          const nonRefugeAnimals = data
-            .filter(
-              (animal) =>
-                animal.statut?.libelle_statut.toLowerCase() !== "refuge"
-            )
-            .map((animal) => ({
+          // Afficher tous les statuts disponibles
+          const allStatuts = new Set(
+            data.map((animal) => animal.statut?.libelle_statut)
+          );
+          console.log("Tous les statuts disponibles:", Array.from(allStatuts));
+
+          // Mapping d'abord pour avoir statut_libelle
+          const formattedAnimals = data.map((animal) => {
+            const statut = animal.statut?.libelle_statut || "";
+            console.log(`Animal ${animal.nom_animal} a le statut:`, statut);
+            return {
               ...animal,
               id: animal.id_animal,
-              statut_libelle: animal.statut?.libelle_statut || "",
+              statut_libelle: statut,
               statut: {
                 id_statut: animal.statut?.id_statut,
                 libelle_statut: animal.statut?.libelle_statut,
@@ -1043,11 +959,20 @@ function Refuge() {
               sexe_libelle: animal.sexe?.libelle_sexe || "",
               fa_libelle: animal.fa?.prenom_fa || "",
               id_fa: animal.fa?.id_fa || null,
-            }));
+            };
+          });
 
-          console.log("Animaux non-refuge:", nonRefugeAnimals);
-          setAnimals(nonRefugeAnimals);
-          setFilteredAnimals(nonRefugeAnimals);
+          // Ensuite filtrer sur statut_libelle en ignorant la casse
+          const refugeAnimals = formattedAnimals.filter((animal) => {
+            const isRefuge =
+              animal.statut_libelle.toLowerCase() === "refuge".toLowerCase();
+            console.log(`Animal ${animal.nom_animal} est-il refuge?`, isRefuge);
+            return isRefuge;
+          });
+
+          console.log("Nombre d'animaux refuge trouvés:", refugeAnimals.length);
+          console.log("Animaux refuge filtrés:", refugeAnimals);
+          setAnimals(refugeAnimals);
         } else {
           throw new Error(`Réponse non OK: ${response.status}`);
         }
@@ -1059,46 +984,49 @@ function Refuge() {
     fetchAnimals();
   }, [accessToken]);
 
-  const isMainPage = location.pathname === "/refuge";
-
   const handleRowUpdate = async (newRow, oldRow) => {
     try {
       const changedFields = {};
       Object.keys(newRow).forEach((key) => {
-        if (newRow[key] !== oldRow[key]) {
+        if (
+          newRow[key] !== oldRow[key] &&
+          ![
+            "id",
+            "fa_libelle",
+            "provenance_libelle",
+            "categorie_libelle",
+            "sexe_libelle",
+          ].includes(key)
+        ) {
           changedFields[key] = newRow[key];
         }
       });
 
-      // Vérifier si le statut change pour "refuge"
-      if (newRow.statut?.libelle_statut.toLowerCase() === "refuge") {
-        // Supprimer immédiatement la ligne des deux états
+      // Si aucun changement, retourner l'ancienne ligne
+      if (Object.keys(changedFields).length === 0) {
+        return oldRow;
+      }
+
+      // Si le statut a changé, vérifier s'il n'est plus "refuge"
+      if (newRow.statut?.libelle_statut.toLowerCase() !== "refuge") {
+        // Supprimer immédiatement la ligne
         setAnimals((prev) => prev.filter((animal) => animal.id !== newRow.id));
-        setFilteredAnimals((prev) =>
-          prev.filter((animal) => animal.id !== newRow.id)
-        );
 
         // Envoyer la mise à jour au serveur
         changedFields.statut = newRow.statut.id_statut;
-        await fetch(
-          `${import.meta.env.VITE_API_URL}/api/animal/${newRow.id}/`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify(changedFields),
-          }
-        );
+        await fetch(`${import.meta.env.VITE_API_URL}/api/animal/${newRow.id}/`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify(changedFields),
+        });
 
-        return null; // Retourner null pour indiquer la suppression
+        return null;
       }
 
-      if (newRow.statut?.id_statut !== oldRow.statut?.id_statut) {
-        changedFields.statut = newRow.statut.id_statut;
-      }
-
+      // Pour les autres mises à jour
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/animal/${newRow.id}/`,
         {
@@ -1111,43 +1039,38 @@ function Refuge() {
         }
       );
 
-      if (response.ok) {
-        const data = await response.json();
+      if (!response.ok) throw new Error("Échec de la mise à jour");
 
-        // Si l'animal a été supprimé (adopté)
-        if (data.message && data.message.includes("archivé")) {
-          // Mettre à jour immédiatement les deux états
-          setAnimals((prev) =>
-            prev.filter((animal) => animal.id !== newRow.id)
-          );
-          setFilteredAnimals((prev) =>
-            prev.filter((animal) => animal.id !== newRow.id)
-          );
-          return null;
-        }
+      const data = await response.json();
 
-        // Pour les autres mises à jour
-        const updatedRow = {
-          ...newRow,
-          ...data,
-          id: newRow.id,
-          statut: data.statut || newRow.statut,
-          statut_libelle: data.statut?.libelle_statut || newRow.statut_libelle,
-        };
-
-        // Mettre à jour les deux états
-        setAnimals((prev) =>
-          prev.map((row) => (row.id === updatedRow.id ? updatedRow : row))
-        );
-        setFilteredAnimals((prev) =>
-          prev.map((row) => (row.id === updatedRow.id ? updatedRow : row))
-        );
-
-        return updatedRow;
+      // Vérifier si l'animal a été archivé
+      if (data.message && data.message.includes("archivé")) {
+        setAnimals((prev) => prev.filter((animal) => animal.id !== newRow.id));
+        return null;
       }
-      throw new Error("Échec de la mise à jour");
+
+      // Créer la ligne mise à jour
+      const updatedRow = {
+        ...oldRow,
+        ...changedFields,
+        id: oldRow.id,
+        statut_libelle:
+          data.statut?.libelle_statut || newRow.statut?.libelle_statut,
+        statut: {
+          id_statut: data.statut?.id_statut || newRow.statut?.id_statut,
+          libelle_statut:
+            data.statut?.libelle_statut || newRow.statut?.libelle_statut,
+        },
+      };
+
+      // Mettre à jour le state
+      setAnimals((prev) =>
+        prev.map((row) => (row.id === updatedRow.id ? updatedRow : row))
+      );
+
+      return updatedRow;
     } catch (error) {
-      console.error("Erreur:", error);
+      console.error("Erreur lors de la mise à jour:", error);
       return oldRow;
     }
   };
@@ -1160,25 +1083,20 @@ function Refuge() {
       <div className="flex-grow flex flex-col md:pl-64 relative z-0">
         <main className="flex-grow p-4 mt-16 md:mt-0">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Famille d&apos;accueil
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900">Chatterie</h1>
             <p className="text-sm text-gray-500">
-              Gestion des animaux en famille d&apos;accueil
+              Gestion des animaux au refuge
             </p>
           </div>
-          {isMainPage && (
-            <AnimalTable
-              animals={filteredAnimals}
-              onRowUpdate={handleRowUpdate}
-              setAnimals={setAnimals}
-              setFilteredAnimals={setFilteredAnimals}
-            />
-          )}
+          <AnimalTable
+            animals={animals}
+            onRowUpdate={handleRowUpdate}
+            setAnimals={setAnimals}
+          />
         </main>
       </div>
     </div>
   );
 }
 
-export default Refuge;
+export default Chatterie;

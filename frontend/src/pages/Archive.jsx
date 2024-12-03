@@ -74,7 +74,7 @@ const ArchiveTable = ({ archives }) => {
         />
       </div>
       <div
-        style={{ height: 700, width: "100%" }}
+        style={{ height: 580, width: "100%" }}
         className="border border-gray-200 rounded-lg overflow-hidden"
       >
         <DataGrid
@@ -144,7 +144,7 @@ function Archive() {
     const fetchArchives = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/api/animal/archive/",
+          `${import.meta.env.VITE_API_URL}/api/animal/archive/`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

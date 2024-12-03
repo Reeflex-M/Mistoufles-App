@@ -34,12 +34,15 @@ function FormCreateAnimal({ onClose }) {
   useEffect(() => {
     const fetchFas = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/fa/", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/fa/`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
         console.log("Réponse reçue:", response);
         if (response.ok) {
           const data = await response.json();
@@ -61,12 +64,15 @@ function FormCreateAnimal({ onClose }) {
   useEffect(() => {
     const fetchSexes = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/animal/sexe/", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/animal/sexe/`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
         if (response.ok) {
           const data = await response.json();
           console.log("Données brutes des sexes:", data);
@@ -87,7 +93,7 @@ function FormCreateAnimal({ onClose }) {
     const fetchProvenances = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/api/animal/provenance/",
+          `${import.meta.env.VITE_API_URL}/api/animal/provenance/`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -119,7 +125,7 @@ function FormCreateAnimal({ onClose }) {
     const fetchStatuts = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/api/animal/statut/",
+          `${import.meta.env.VITE_API_URL}/api/animal/statut/`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -146,7 +152,7 @@ function FormCreateAnimal({ onClose }) {
     const fetchCategories = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/api/animal/categorie/",
+          `${import.meta.env.VITE_API_URL}/api/animal/categorie/`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -264,14 +270,17 @@ function FormCreateAnimal({ onClose }) {
     console.log("Données envoyées:", animalData); // Pour le débogage
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/animal/create/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(animalData),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/animal/create/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify(animalData),
+        }
+      );
 
       const data = await response.json();
       console.log("Réponse de l'API:", data); // Pour le débogage

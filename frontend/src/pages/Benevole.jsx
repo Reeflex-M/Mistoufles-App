@@ -73,7 +73,7 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
   const handleNoteSave = async (newNote) => {
     try {
       const response = await axios.patch(
-        `http://127.0.0.1:8000/api/fa/${selectedNote.id}/`,
+        `${import.meta.env.VITE_API_URL}/api/fa/${selectedNote.id}/`,
         { note: newNote },
         {
           headers: {
@@ -104,7 +104,7 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
 
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/fa/${id}/delete/`,
+        `${import.meta.env.VITE_API_URL}/api/fa/${id}/delete/`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`,
@@ -226,7 +226,7 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
         />
       </div>
       <div
-        style={{ height: 700, width: "100%" }}
+        style={{ height: 510, width: "100%" }} // Modification de 700px à 600px
         className="border border-gray-200 rounded-lg overflow-hidden relative z-0"
       >
         <DataGrid
@@ -328,19 +328,22 @@ function Benevole() {
         }
 
         // Fetch tous les FAs
-        const responseFas = await fetch("http://127.0.0.1:8000/api/fa/", {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          credentials: "include",
-        });
+        const responseFas = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/fa/`,
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+            credentials: "include",
+          }
+        );
 
         // Fetch FAs sans animaux
         const responseUnassigned = await fetch(
-          "http://127.0.0.1:8000/api/fa/unassigned/",
+          `${import.meta.env.VITE_API_URL}/api/fa/unassigned/`,
           {
             method: "GET",
             headers: {
@@ -390,7 +393,7 @@ function Benevole() {
   const handleRowUpdate = async (newRow, oldRow) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/fa/${newRow.id}/`,
+        `${import.meta.env.VITE_API_URL}/api/fa/${newRow.id}/`,
         {
           method: "PATCH",
           headers: {

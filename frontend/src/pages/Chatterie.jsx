@@ -813,7 +813,7 @@ const AnimalTable = ({ animals, onRowUpdate, setAnimals }) => {
         />
       </div>
       <div
-        style={{ height: 700, width: "100%" }}
+        style={{ height: 570, width: "100%" }}
         className="border border-gray-200 rounded-lg overflow-hidden"
       >
         <DataGrid

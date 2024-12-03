@@ -26,21 +26,24 @@ function FormCreateFA({ onClose }) {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/fa/create/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
-          prenom_fa,
-          commune_fa,
-          libelle_reseausociaux,
-          telephone_fa,
-          libelle_veterinaire,
-          note,
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/fa/create/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            prenom_fa,
+            commune_fa,
+            libelle_reseausociaux,
+            telephone_fa,
+            libelle_veterinaire,
+            note,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Erreur lors de la création du FA");

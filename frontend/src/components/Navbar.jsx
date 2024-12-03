@@ -41,7 +41,7 @@ const Navbar = () => {
 
       try {
         const response = await fetch(
-          "http://localhost:8000/api/current_user/",
+          `${import.meta.env.VITE_API_URL}/api/current_user/`,
           {
             headers: {
               "Content-Type": "application/json",
