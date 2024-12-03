@@ -1,5 +1,10 @@
 ﻿# 🐱 Mistoufles - Gestion de Refuge / Bénécole / Famille d'accueil
 
+npm run dev → développement local (localhost)
+npm run dev:staging → développement réseau local (192.168.1.12)
+npm run build:staging → build pour environnement staging
+npm run build → build pour production
+
 <div align="center">
   <img src="frontend/public/logo.png" alt="Mistoufles Logo" width="200"/>
   

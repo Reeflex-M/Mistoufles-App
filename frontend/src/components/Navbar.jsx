@@ -41,7 +41,7 @@ const Navbar = () => {
 
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/api/current_user/",
+          "http://localhost:8000/api/current_user/",
           {
             headers: {
               "Content-Type": "application/json",
