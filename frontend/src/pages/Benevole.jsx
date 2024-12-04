@@ -57,7 +57,7 @@ NoteDialog.propTypes = {
   onSave: PropTypes.func.isRequired,
 };
 
-const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
+const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas, setFas }) => {
   const [searchText, setSearchText] = useState("");
   const [isNoteDialogOpen, setIsNoteDialogOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState({ id: null, note: "" });
@@ -85,11 +85,13 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
       );
 
       if (response.status === 200) {
-        setFilteredFas((prev) =>
+        const updateFunc = (prev) =>
           prev.map((row) =>
             row.id === selectedNote.id ? { ...row, note: newNote } : row
-          )
-        );
+          );
+
+        setFilteredFas(updateFunc);
+        setFas(updateFunc);
         setIsNoteDialogOpen(false);
       }
     } catch (error) {
@@ -113,7 +115,9 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas }) => {
       );
 
       if (response.status === 204) {
-        setFilteredFas((prev) => prev.filter((row) => row.id !== id));
+        const filterFunc = (prev) => prev.filter((row) => row.id !== id);
+        setFilteredFas(filterFunc);
+        setFas(filterFunc);
       }
     } catch (error) {
       if (error.response?.status === 400) {
@@ -309,6 +313,7 @@ BenevoleTable.propTypes = {
   ).isRequired,
   onRowUpdate: PropTypes.func.isRequired,
   setFilteredFas: PropTypes.func.isRequired,
+  setFas: PropTypes.func.isRequired,
 };
 
 function Benevole() {
@@ -408,9 +413,15 @@ function Benevole() {
       if (response.ok) {
         // eslint-disable-next-line no-unused-vars
         const updatedData = await response.json();
+
+        // Mettre à jour les deux états
+        setFas((prev) =>
+          prev.map((row) => (row.id === newRow.id ? { ...newRow } : row))
+        );
         setFilteredFas((prev) =>
           prev.map((row) => (row.id === newRow.id ? { ...newRow } : row))
         );
+
         return newRow;
       } else {
         throw new Error("Mise à jour échouée");
@@ -457,6 +468,7 @@ function Benevole() {
                 fas={filteredFas}
                 onRowUpdate={handleRowUpdate}
                 setFilteredFas={setFilteredFas}
+                setFas={setFas}
               />
             </>
           )}
