@@ -40,13 +40,16 @@ class SexeSerializer(serializers.ModelSerializer):
 class FASerializer(serializers.ModelSerializer):
     class Meta:
         model = FA
-        fields = ["id_fa", 
-                  "prenom_fa",
-                  "commune_fa",
-                  "telephone_fa",
-                  "libelle_reseausociaux",
-                  "libelle_veterinaire",
-                  "note"]
+        fields = [
+            "id_fa",
+            "prenom_fa",
+            "commune_fa",
+            "telephone_fa",
+            "email_fa",  # Ajout de email_fa ici
+            "libelle_reseausociaux",
+            "libelle_veterinaire",
+            "note"
+        ]
         
 #Animal
 class AnimalSerializer(serializers.ModelSerializer):

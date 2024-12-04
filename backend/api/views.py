@@ -180,22 +180,31 @@ class FAUpdate(generics.UpdateAPIView):
     queryset = FA.objects.all()
     serializer_class = FASerializer
     permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
 
     def patch(self, request, *args, **kwargs):
         instance = self.get_object()
+        print("Données reçues pour mise à jour FA:", request.data)
 
-        # Mise à jour spécifique pour la note
-        if 'note' in request.data:
-            instance.note = request.data['note']
-            instance.save()
-            return Response({'note': instance.note})
+        # Liste des champs modifiables
+        editable_fields = [
+            'prenom_fa',
+            'commune_fa',
+            'telephone_fa',
+            'email_fa',  # Ajout de email_fa ici
+            'libelle_reseausociaux',
+            'libelle_veterinaire',
+            'note'
+        ]
 
-        # Pour les autres champs
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        for field in editable_fields:
+            if field in request.data:
+                setattr(instance, field, request.data[field])
+
+        instance.save()
+        serializer = self.get_serializer(instance)
+        print("Données sauvegardées:", serializer.data)  # Debug log
+        return Response(serializer.data)
 
 class FADetail(generics.RetrieveAPIView):
     queryset = FA.objects.all()

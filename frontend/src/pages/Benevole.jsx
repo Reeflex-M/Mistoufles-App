@@ -139,10 +139,7 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas, setFas }) => {
 
   const columns = [
     { field: "prenom_fa", headerName: "Prénom", flex: 0.5, minWidth: 80 },
-    { field: "nom_fa", headerName: "Nom", flex: 0.5, minWidth: 80 },
-    { field: "adresse_fa", headerName: "Adresse", flex: 0.8, minWidth: 120 },
     { field: "commune_fa", headerName: "Commune", flex: 0.5, minWidth: 80 },
-    { field: "code_postal_fa", headerName: "CP", flex: 0.3, minWidth: 60 },
     { field: "telephone_fa", headerName: "Tél", flex: 0.5, minWidth: 100 },
     { field: "email_fa", headerName: "Email", flex: 0.8, minWidth: 120 },
     {
@@ -166,7 +163,7 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas, setFas }) => {
       renderCell: (params) => (
         <div className="flex items-center justify-center w-full">
           <button
-            onClick={() => handleNoteClick(params.row.id, params.value)}
+            onClick={() => handleNoteClick(params.row.id_fa, params.value)}
             className={`px-3 py-1 rounded-md text-sm font-medium transition-colors
               ${
                 params.value
@@ -186,7 +183,7 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas, setFas }) => {
       width: 100,
       renderCell: (params) => (
         <button
-          onClick={() => handleDelete(params.row.id)}
+          onClick={() => handleDelete(params.row.id_fa)}
           className="px-3 py-1 bg-red-100 text-red-700 hover:bg-red-200 rounded-md text-sm font-medium transition-colors"
           title="Supprimer le bénévole"
         >
@@ -196,11 +193,14 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas, setFas }) => {
     },
   ].map((column) => ({
     ...column,
-    editable: column.editable !== false,
+    editable:
+      column.editable !== false &&
+      column.field !== "actions" &&
+      column.field !== "note", // Modification ici
     headerClassName: "super-app-theme--header",
     headerAlign: "center",
     align: "center",
-    // N'applique le renderCell par défaut que si la colderCell personnalisé
+    // N'applique le renderCell par défaut que si la colonne n'a pas déjà un renderCell personnalisé
     ...(column.renderCell
       ? {}
       : {
@@ -243,7 +243,16 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas, setFas }) => {
           pageSizeOptions={[15, 30, 50, 100]}
           disableSelectionOnClick
           density="compact"
-          processRowUpdate={onRowUpdate}
+          getRowId={(row) => row.id_fa} // Ajout de cette ligne
+          processRowUpdate={async (newRow, oldRow) => {
+            try {
+              const updatedRow = await onRowUpdate(newRow, oldRow);
+              return updatedRow;
+            } catch (error) {
+              console.error("Erreur lors de la mise à jour:", error);
+              return oldRow;
+            }
+          }}
           experimentalFeatures={{ newEditingApi: true }}
           sx={{
             backgroundColor: "white",
@@ -397,35 +406,43 @@ function Benevole() {
 
   const handleRowUpdate = async (newRow, oldRow) => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/fa/${newRow.id}/`,
+      console.log("Mise à jour:", newRow); // Debug
+      const changedFields = {};
+      Object.keys(newRow).forEach((key) => {
+        if (newRow[key] !== oldRow[key]) {
+          changedFields[key] = newRow[key];
+        }
+      });
+
+      if (Object.keys(changedFields).length === 0) return oldRow;
+
+      const response = await axios.patch(
+        `${import.meta.env.VITE_API_URL}/api/fa/${newRow.id_fa}/`, // Changement ici: newRow.id -> newRow.id_fa
+        changedFields,
         {
-          method: "PATCH",
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
-          body: JSON.stringify(newRow),
         }
       );
 
-      if (response.ok) {
-        // eslint-disable-next-line no-unused-vars
-        const updatedData = await response.json();
+      if (response.status === 200) {
+        const updatedData = response.data;
+        const updatedRow = { ...newRow, ...updatedData };
+        console.log("Données mises à jour:", updatedRow); // Debug
 
-        // Mettre à jour les deux états
         setFas((prev) =>
-          prev.map((row) => (row.id === newRow.id ? { ...newRow } : row))
+          prev.map((row) => (row.id_fa === updatedRow.id_fa ? updatedRow : row))
         );
         setFilteredFas((prev) =>
-          prev.map((row) => (row.id === newRow.id ? { ...newRow } : row))
+          prev.map((row) => (row.id_fa === updatedRow.id_fa ? updatedRow : row))
         );
 
-        return newRow;
-      } else {
-        throw new Error("Mise à jour échouée");
+        return updatedRow;
       }
+      throw new Error("Mise à jour échouée");
     } catch (error) {
       console.error("Erreur lors de la mise à jour:", error);
       return oldRow;
