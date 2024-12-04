@@ -143,6 +143,14 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas, setFas }) => {
     { field: "telephone_fa", headerName: "Tél", flex: 0.5, minWidth: 100 },
     { field: "email_fa", headerName: "Email", flex: 0.8, minWidth: 120 },
     {
+      field: "nombre_animaux",
+      headerName: "Nb Animaux",
+      flex: 0.4,
+      minWidth: 60,
+      editable: false,
+      type: "number",
+    },
+    {
       field: "libelle_reseausociaux",
       headerName: "RS",
       flex: 0.4,
@@ -196,7 +204,8 @@ const BenevoleTable = ({ fas, onRowUpdate, setFilteredFas, setFas }) => {
     editable:
       column.editable !== false &&
       column.field !== "actions" &&
-      column.field !== "note", // Modification ici
+      column.field !== "note" &&
+      column.field !== "nombre_animaux",
     headerClassName: "super-app-theme--header",
     headerAlign: "center",
     align: "center",

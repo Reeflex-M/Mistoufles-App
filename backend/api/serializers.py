@@ -38,6 +38,8 @@ class SexeSerializer(serializers.ModelSerializer):
 
 #FA
 class FASerializer(serializers.ModelSerializer):
+    nombre_animaux = serializers.SerializerMethodField()
+
     class Meta:
         model = FA
         fields = [
@@ -48,8 +50,12 @@ class FASerializer(serializers.ModelSerializer):
             "email_fa",  # Ajout de email_fa ici
             "libelle_reseausociaux",
             "libelle_veterinaire",
-            "note"
+            "note",
+            "nombre_animaux"  # Ajout du nouveau champ
         ]
+
+    def get_nombre_animaux(self, obj):
+        return obj.animal_set.count()
         
 #Animal
 class AnimalSerializer(serializers.ModelSerializer):
