@@ -1160,9 +1160,7 @@ function Refuge() {
       <div className="flex-grow flex flex-col md:pl-64 relative z-0">
         <main className="flex-grow p-4 mt-16 md:mt-0">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Famille d&apos;accueil
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900">Animaux en FA</h1>
             <p className="text-sm text-gray-500">
               Gestion des animaux en famille d&apos;accueil
             </p>
