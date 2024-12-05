@@ -154,13 +154,10 @@ const Navbar = () => {
         md:translate-x-0 md:block
       `}
       >
-        <Link
-          to="/"
-          className="flex items-center space-x-3 mb-8 hover:opacity-80 transition-opacity"
-        >
+        <div className="flex items-center space-x-3 mb-8 hover:opacity-80 transition-opacity">
           <FaPaw className="text-3xl text-purple-600" />
           <span className="text-xl font-bold text-gray-800">Mistoufles</span>
-        </Link>
+        </div>
 
         <div className="mb-8 relative">
           <button
