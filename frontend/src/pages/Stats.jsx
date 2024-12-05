@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -371,62 +370,80 @@ function Stats() {
 
   if (loading)
     return (
-      <div className="flex flex-col min-h-screen bg-gray-50">
-        <Navbar />
-        <div className="flex-grow flex justify-center items-center">
-          <div className="text-gray-600">Chargement des statistiques...</div>
-        </div>
+      <div className="flex-grow flex justify-center items-center">
+        <div className="text-gray-600">Chargement des statistiques...</div>
       </div>
     );
 
   if (error)
     return (
-      <div className="flex flex-col min-h-screen bg-gray-50">
-        <Navbar />
-        <div className="flex-grow flex justify-center items-center">
-          <div className="text-red-600">Erreur: {error}</div>
-        </div>
+      <div className="flex-grow flex justify-center items-center">
+        <div className="text-red-600">Erreur: {error}</div>
       </div>
     );
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navbar />
-      <div className="flex-grow flex flex-col md:pl-64">
-        <main className="flex-grow p-8">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-800">Statistiques</h1>
-            <p className="text-gray-600 mt-2">Statistiques du refuge</p>
+    <div className="flex-grow flex flex-col">
+      <main className="flex-grow p-8">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">Statistiques</h1>
+          <p className="text-gray-600 mt-2">Statistiques du refuge</p>
+        </div>
+
+        {/* Sélecteur d'année */}
+        <div className="mb-6">
+          <label htmlFor="year-select" className="mr-2">
+            Sélectionnez une année :
+          </label>
+          <select
+            id="year-select"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            className="border border-gray-300 rounded p-1"
+          >
+            {availableYears.map((year) => (
+              <option key={year} value={year}>
+                {year === "Global" ? "Toutes les années" : year}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Graphique des adoptions par année */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-4">Adoptions par année</h2>
+            <div className="h-[300px]">
+              <Bar
+                data={getYearlyAdoptions()}
+                options={{
+                  maintainAspectRatio: false,
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      ticks: {
+                        stepSize: 1,
+                      },
+                    },
+                  },
+                  plugins: {
+                    title: {
+                      display: true,
+                      text: "Évolution des adoptions par année",
+                    },
+                  },
+                }}
+              />
+            </div>
           </div>
 
-          {/* Sélecteur d'année */}
-          <div className="mb-6">
-            <label htmlFor="year-select" className="mr-2">
-              Sélectionnez une année :
-            </label>
-            <select
-              id="year-select"
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-              className="border border-gray-300 rounded p-1"
-            >
-              {availableYears.map((year) => (
-                <option key={year} value={year}>
-                  {year === "Global" ? "Toutes les années" : year}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Graphique des adoptions par année */}
+          {/* Graphique des adoptions par mois - Conditionnel */}
+          {selectedYear !== "Global" && (
             <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4">
-                Adoptions par année
-              </h2>
+              <h2 className="text-xl font-semibold mb-4">Adoptions par mois</h2>
               <div className="h-[300px]">
                 <Bar
-                  data={getYearlyAdoptions()}
+                  data={getMonthlyAdoptions()}
                   options={{
                     maintainAspectRatio: false,
                     scales: {
@@ -440,86 +457,52 @@ function Stats() {
                     plugins: {
                       title: {
                         display: true,
-                        text: "Évolution des adoptions par année",
+                        text: `Adoptions par mois en ${selectedYear}`,
                       },
                     },
                   }}
                 />
               </div>
             </div>
+          )}
 
-            {/* Graphique des adoptions par mois - Conditionnel */}
-            {selectedYear !== "Global" && (
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h2 className="text-xl font-semibold mb-4">
-                  Adoptions par mois
-                </h2>
-                <div className="h-[300px]">
-                  <Bar
-                    data={getMonthlyAdoptions()}
-                    options={{
-                      maintainAspectRatio: false,
-                      scales: {
-                        y: {
-                          beginAtZero: true,
-                          ticks: {
-                            stepSize: 1,
-                          },
-                        },
-                      },
-                      plugins: {
-                        title: {
-                          display: true,
-                          text: `Adoptions par mois en ${selectedYear}`,
-                        },
-                      },
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Graphique des motifs d'archivage */}
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4">
-                Répartition des motifs d'archivage
-              </h2>
-              <div className="h-[300px] flex justify-center">
-                <Pie
-                  data={motifData}
-                  options={{ maintainAspectRatio: false }}
-                />
-              </div>
-            </div>
-
-            {/* Ajoutez ce nouveau bloc après les deux graphiques existants */}
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4">
-                Répartition par provenance
-              </h2>
-              <div className="h-[300px] flex justify-center">
-                <Pie
-                  data={provenanceData}
-                  options={{ maintainAspectRatio: false }}
-                />
-              </div>
-            </div>
-
-            {/* Ajouter ce nouveau bloc après les autres graphiques */}
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4">
-                Répartition par catégorie
-              </h2>
-              <div className="h-[300px] flex justify-center">
-                <Pie
-                  data={categorieData}
-                  options={{ maintainAspectRatio: false }}
-                />
-              </div>
+          {/* Graphique des motifs d'archivage */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-4">
+              Répartition des motifs d'archivage
+            </h2>
+            <div className="h-[300px] flex justify-center">
+              <Pie data={motifData} options={{ maintainAspectRatio: false }} />
             </div>
           </div>
-        </main>
-      </div>
+
+          {/* Ajoutez ce nouveau bloc après les deux graphiques existants */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-4">
+              Répartition par provenance
+            </h2>
+            <div className="h-[300px] flex justify-center">
+              <Pie
+                data={provenanceData}
+                options={{ maintainAspectRatio: false }}
+              />
+            </div>
+          </div>
+
+          {/* Ajouter ce nouveau bloc après les autres graphiques */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-4">
+              Répartition par catégorie
+            </h2>
+            <div className="h-[300px] flex justify-center">
+              <Pie
+                data={categorieData}
+                options={{ maintainAspectRatio: false }}
+              />
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

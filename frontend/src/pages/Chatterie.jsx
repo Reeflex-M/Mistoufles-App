@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import { DataGrid } from "@mui/x-data-grid";
 import { ACCESS_TOKEN } from "../constants";
 import Dialog from "@mui/material/Dialog";
@@ -1075,25 +1074,16 @@ function Chatterie() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <div className="relative z-10">
-        <Navbar />
+    <div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Chatterie</h1>
+        <p className="text-sm text-gray-500">Gestion des animaux au refuge</p>
       </div>
-      <div className="flex-grow flex flex-col md:pl-64 relative z-0">
-        <main className="flex-grow p-4 mt-16 md:mt-0">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Chatterie</h1>
-            <p className="text-sm text-gray-500">
-              Gestion des animaux au refuge
-            </p>
-          </div>
-          <AnimalTable
-            animals={animals}
-            onRowUpdate={handleRowUpdate}
-            setAnimals={setAnimals}
-          />
-        </main>
-      </div>
+      <AnimalTable
+        animals={animals}
+        onRowUpdate={handleRowUpdate}
+        setAnimals={setAnimals}
+      />
     </div>
   );
 }

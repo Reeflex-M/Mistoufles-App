@@ -174,17 +174,10 @@ function Archive() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <div className="relative z-10">
-        <Navbar />
-      </div>
-      <div className="flex-grow flex flex-col md:pl-64 relative z-0">
-        <main className="flex-grow p-4 mt-16 md:mt-0">
-          {" "}
-          {/* Ajout de mt-16 en mobile pour éviter que le contenu ne soit caché par le Navbar */}
-          <h1 className="text-2xl font-bold mb-6">Archives</h1>
-          <ArchiveTable archives={archives} />
-        </main>
-      </div>
+      <main className="flex-grow p-4">
+        <h1 className="text-2xl font-bold mb-6">Archives</h1>
+        <ArchiveTable archives={archives} />
+      </main>
     </div>
   );
 }

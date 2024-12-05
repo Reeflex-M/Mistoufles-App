@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import { DataGrid } from "@mui/x-data-grid";
 import { ACCESS_TOKEN } from "../constants";
 import axios from "axios";
@@ -461,45 +460,39 @@ function Benevole() {
   const isMainPage = location.pathname === "/benevole";
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <div className="relative z-10">
-        <Navbar />
-      </div>
-      <div className="flex-grow flex flex-col md:pl-64 relative z-0">
-        <main className="flex-grow p-4 mt-16 md:mt-0">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Bénévole</h1>
-            <p className="text-sm text-gray-500">
-              Gestion des bénévoles de l&apos;association
-            </p>
-          </div>{" "}
-          {/* Ajout de mt-16 en mobile */}
-          {isMainPage && (
-            <>
-              <div className="mb-4">
-                <button
-                  onClick={handleToggleUnassigned}
-                  className={`px-4 py-2 rounded-lg transition-colors ${
-                    showOnlyUnassigned
-                      ? "bg-purple-600 text-white"
-                      : "bg-gray-200 text-gray-700"
-                  }`}
-                >
-                  {showOnlyUnassigned
-                    ? "Voir tous les bénévoles"
-                    : "Voir les bénévoles sans animal"}
-                </button>
-              </div>
-              <BenevoleTable
-                fas={filteredFas}
-                onRowUpdate={handleRowUpdate}
-                setFilteredFas={setFilteredFas}
-                setFas={setFas}
-              />
-            </>
-          )}
-        </main>
-      </div>
+    <div className="flex-grow flex flex-col">
+      <main className="flex-grow p-4 mt-16 md:mt-0">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Bénévole</h1>
+          <p className="text-sm text-gray-500">
+            Gestion des bénévoles de l&apos;association
+          </p>
+        </div>
+        {isMainPage && (
+          <>
+            <div className="mb-4">
+              <button
+                onClick={handleToggleUnassigned}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  showOnlyUnassigned
+                    ? "bg-purple-600 text-white"
+                    : "bg-gray-200 text-gray-700"
+                }`}
+              >
+                {showOnlyUnassigned
+                  ? "Voir tous les bénévoles"
+                  : "Voir les bénévoles sans animal"}
+              </button>
+            </div>
+            <BenevoleTable
+              fas={filteredFas}
+              onRowUpdate={handleRowUpdate}
+              setFilteredFas={setFilteredFas}
+              setFas={setFas}
+            />
+          </>
+        )}
+      </main>
     </div>
   );
 }

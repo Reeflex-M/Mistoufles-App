@@ -2,9 +2,8 @@ import Navbar from "../components/Navbar";
 
 const PrivacyPolicy = () => {
   return (
-    <div className="flex">
-      <Navbar />
-      <div className="flex-1 md:ml-64 p-8">
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      <main className="flex-grow p-8">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-gray-800 mb-6">
             Politique de Confidentialité - Usage Interne
@@ -71,7 +70,7 @@ const PrivacyPolicy = () => {
             </section>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

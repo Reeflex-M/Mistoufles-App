@@ -1,4 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Login from "./pages/Login";
 import Refuge from "./pages/Refuge";
 import Benevole from "./pages/Benevole";
@@ -8,6 +13,7 @@ import ProtectedRoute from "./components/ProtectedRoutes";
 import Archive from "./pages/Archive";
 import Chatterie from "./pages/Chatterie";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Layout from "./components/Layout";
 import "./index.css";
 
 const Logout = () => {
@@ -17,62 +23,57 @@ const Logout = () => {
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Refuge />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/refuge"
-          element={
-            <ProtectedRoute>
-              <Refuge />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/benevole"
-          element={
-            <ProtectedRoute>
-              <Benevole />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/stats"
-          element={
-            <ProtectedRoute>
-              <Stats />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/login" element={<Login />} />
-        <Route path="/logout" element={<Logout />} />
-        <Route
-          path="/archive"
-          element={
-            <ProtectedRoute>
-              <Archive />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/chatterie"
-          element={
-            <ProtectedRoute>
-              <Chatterie />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/*" element={<NotFound />} />
+        <Route path="/" element={<Layout />}>
+          <Route
+            path="refuge"
+            element={
+              <ProtectedRoute>
+                <Refuge />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="benevole"
+            element={
+              <ProtectedRoute>
+                <Benevole />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="stats"
+            element={
+              <ProtectedRoute>
+                <Stats />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="archive"
+            element={
+              <ProtectedRoute>
+                <Archive />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="chatterie"
+            element={
+              <ProtectedRoute>
+                <Chatterie />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+        <Route path="login" element={<Login />} />
+        <Route path="logout" element={<Logout />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 
