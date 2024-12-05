@@ -121,6 +121,8 @@ const Navbar = () => {
         return 207; // Modifié de 224 à 216
       case "archive":
         return 270; // Modifié de 288 à 280
+      case "privacy-policy": // Ajout de ce cas
+        return 0; // On peut mettre 0 ou null pour masquer l'indicateur
       default:
         return 0;
     }
@@ -184,7 +186,9 @@ const Navbar = () => {
         <ul className="space-y-4 relative">
           {/* Indicateur de fond actif */}
           <div
-            className={`absolute w-full h-[48px] bg-purple-100 rounded-lg transition-transform duration-200 ease-out`}
+            className={`absolute w-full h-[48px] bg-purple-100 rounded-lg transition-transform duration-200 ease-out ${
+              activeItem === "privacy-policy" ? "hidden" : ""
+            }`}
             style={{
               transform: `translateY(${getIndicatorPosition(activeItem)}px)`,
             }}
@@ -284,6 +288,12 @@ const Navbar = () => {
               <FaPlus className="text-sm" />
               <span>Ajouter FA</span>
             </button>
+            <Link
+              to="/privacy-policy"
+              className="block text-center text-sm text-gray-500 hover:text-purple-600 transition-colors duration-300 mt-2"
+            >
+              Politique de confidentialité
+            </Link>
           </div>
         </div>
       </nav>

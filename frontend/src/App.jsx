@@ -7,6 +7,7 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import Archive from "./pages/Archive";
 import Chatterie from "./pages/Chatterie";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import "./index.css";
 
 const Logout = () => {
@@ -68,6 +69,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
