@@ -201,7 +201,7 @@ const Navbar = () => {
             >
               <div className="flex items-center h-full px-4">
                 <RiHome5Fill className="text-xl w-[20px]" />
-                <span className="ml-3">FA</span>
+                <span className="ml-3">Animaux en FA</span>
               </div>
             </Link>
           </li>
@@ -302,7 +302,7 @@ const Navbar = () => {
           onClick={handleClickOutside}
         >
           <div
-            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl h-[90vh] relative popup-content"
+            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-[1100px] h-[90vh] relative popup-content" // Augmenté max-w-2xl à max-w-[1800px]
             onClick={preventClose}
           >
             <button
@@ -326,7 +326,7 @@ const Navbar = () => {
           onClick={handleClickOutside}
         >
           <div
-            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl h-[90vh] relative popup-content"
+            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-[700px] h-[90vh] relative popup-content" // Augmenté max-w-2xl à max-w-[1800px]
             onClick={preventClose}
           >
             <button

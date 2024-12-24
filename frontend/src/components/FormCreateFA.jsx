@@ -7,6 +7,7 @@ function FormCreateFA({ onClose }) {
   const [commune_fa, setCommuneFa] = useState("");
   const [libelle_reseausociaux, setLibelle_reseausociaux] = useState("");
   const [telephone_fa, setTelephone_fa] = useState("");
+  const [email_fa, setEmailFa] = useState("");
   const [libelle_veterinaire, setLibelle_veterinaire] = useState("");
   const [note, setNote] = useState("");
   const [error, setError] = useState(null);
@@ -39,6 +40,7 @@ function FormCreateFA({ onClose }) {
             commune_fa,
             libelle_reseausociaux,
             telephone_fa,
+            email_fa,
             libelle_veterinaire,
             note,
           }),
@@ -58,7 +60,7 @@ function FormCreateFA({ onClose }) {
   };
 
   return (
-    <div className="max-w-md mx-auto h-full">
+    <div className="max-w-xl mx-auto h-full">
       <form
         onSubmit={handleSubmit}
         className="bg-white rounded-lg shadow-lg flex flex-col h-full"
@@ -127,6 +129,23 @@ function FormCreateFA({ onClose }) {
                   placeholder="0X XX XX XX XX"
                 />
               </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="email_fa"
+                className="text-sm text-gray-600 block mb-1"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                id="email_fa"
+                value={email_fa}
+                onChange={(e) => setEmailFa(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-md transition-all duration-200 ease-in-out focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+                placeholder="Adresse email"
+              />
             </div>
 
             <div>

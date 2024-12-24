@@ -305,387 +305,389 @@ function FormCreateAnimal({ onClose }) {
   };
 
   return (
-    <div className="w-full">
-      {" "}
-      {/* Retirez toute classe overflow ou scroll */}
+    <div className="w-[800px]"> {/* Changé de w-[95vw] max-w-7xl à une largeur fixe */}
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Informations générales */}
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Informations générales
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="animalName"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Nom de l&apos;animal
-              </label>
-              <input
-                type="text"
-                id="animalName"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Nom de l'animal"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="identificationNumber"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Numéro d&apos;identification
-              </label>
-              <input
-                type="text"
-                id="identificationNumber"
-                value={identificationNumber}
-                onChange={(e) => setIdentificationNumber(e.target.value)}
-                placeholder="Numéro d'identification"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Dates importantes */}
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Dates importantes
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="birthDate"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Date de naissance
-              </label>
-              <input
-                type="date"
-                id="birthDate"
-                value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
-                placeholder="Date de naissance"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="primoVaccDate"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Date du premier vaccin
-              </label>
-              <input
-                type="date"
-                id="primoVaccDate"
-                value={primoVacc}
-                onChange={(e) => setPrimoVacc(e.target.value)}
-                placeholder="Date du premier vaccin"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="rappelVaccDate"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Date du rappel vaccinal
-              </label>
-              <input
-                type="date"
-                id="rappelVaccDate"
-                value={rappelVacc}
-                onChange={(e) => setRappelVacc(e.target.value)}
-                placeholder="Date du rappel vaccinal"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="vermifugeDate"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Date du vermifuge
-              </label>
-              <input
-                type="date"
-                id="vermifugeDate"
-                value={vermifuge}
-                onChange={(e) => setVermifuge(e.target.value)}
-                placeholder="Date du vermifuge"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="antipuceDate"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Date de l&apos;anti-puce
-              </label>
-              <input
-                type="date"
-                id="antipuceDate"
-                value={antipuce}
-                onChange={(e) => setAntipuce(e.target.value)}
-                placeholder="Date de l'anti-puce"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Statut et caractéristiques */}
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Statut et caractéristiques
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* ... autres champs ... */}
-
-            <div>
-              <label
-                htmlFor="faInput"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                FA
-              </label>
-              <div ref={faInputRef} className="relative">
-                <div className="flex items-center">
+        <div className="grid grid-cols-2 gap-4"> {/* Grid container principal pour le layout horizontal */}
+          {/* Colonne de gauche */}
+          <div className="space-y-4">
+            {/* Informations générales */}
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Informations générales
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="animalName"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Nom de l&apos;animal
+                  </label>
                   <input
                     type="text"
-                    id="faInput"
-                    value={fa}
-                    onChange={handleFaChange}
-                    onFocus={() => setShowFaList(true)}
-                    placeholder="Saisir le prénom du FA"
+                    id="animalName"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Nom de l'animal"
                     className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    autoComplete="off"
-                  />
-                  <FaCaretDown
-                    className="ml-2 cursor-pointer"
-                    onClick={toggleFaList}
                   />
                 </div>
-                {showFaList && filteredFas.length > 0 && (
-                  <div className="absolute z-10 w-full bg-white border rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
-                    {filteredFas.map((f) => (
-                      <div
-                        key={`fa-suggestion-${f?.id_fa}`}
-                        className="p-3 hover:bg-gray-100 cursor-pointer transition-colors duration-150"
-                        onClick={() => handleFaClick(f)}
-                      >
-                        <div className="font-medium">
-                          {f?.prenom_fa || "Sans prénom"}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {f?.commune_fa && <span>{f.commune_fa}</span>}
-                          {f?.libelle_reseausociaux && (
-                            <span className="ml-2">
-                              • {f.libelle_reseausociaux}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <div>
+                  <label
+                    htmlFor="identificationNumber"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Numéro d&apos;identification
+                  </label>
+                  <input
+                    type="text"
+                    id="identificationNumber"
+                    value={identificationNumber}
+                    onChange={(e) => setIdentificationNumber(e.target.value)}
+                    placeholder="Numéro d'identification"
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
               </div>
             </div>
-            <div>
-              <label
-                htmlFor="sexe"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Sexe
-              </label>
-              <select
-                id="sexe"
-                value={sexe}
-                onChange={(e) => {
-                  console.log("Valeur sélectionnée:", e.target.value);
-                  setSexe(e.target.value);
-                }}
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option key="default-select" value="">
-                  Sélectionner le sexe
-                </option>
-                {sexes && sexes.length > 0 ? (
-                  sexes.map((s) => (
-                    <option
-                      key={`sexe-${s.id_sexe || s.id}`}
-                      value={s.id_sexe || s.id}
-                    >
-                      {s.libelle_sexe || s.libelle || "Sans libellé"}
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>
-                    Chargement des sexes...
-                  </option>
-                )}
-              </select>
+
+            {/* Dates importantes */}
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Dates importantes
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="birthDate"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Date de naissance
+                  </label>
+                  <input
+                    type="date"
+                    id="birthDate"
+                    value={birthDate}
+                    onChange={(e) => setBirthDate(e.target.value)}
+                    placeholder="Date de naissance"
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="primoVaccDate"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Date du premier vaccin
+                  </label>
+                  <input
+                    type="date"
+                    id="primoVaccDate"
+                    value={primoVacc}
+                    onChange={(e) => setPrimoVacc(e.target.value)}
+                    placeholder="Date du premier vaccin"
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="rappelVaccDate"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Date du rappel vaccinal
+                  </label>
+                  <input
+                    type="date"
+                    id="rappelVaccDate"
+                    value={rappelVacc}
+                    onChange={(e) => setRappelVacc(e.target.value)}
+                    placeholder="Date du rappel vaccinal"
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="vermifugeDate"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Date du vermifuge
+                  </label>
+                  <input
+                    type="date"
+                    id="vermifugeDate"
+                    value={vermifuge}
+                    onChange={(e) => setVermifuge(e.target.value)}
+                    placeholder="Date du vermifuge"
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="antipuceDate"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Date de l&apos;anti-puce
+                  </label>
+                  <input
+                    type="date"
+                    id="antipuceDate"
+                    value={antipuce}
+                    onChange={(e) => setAntipuce(e.target.value)}
+                    placeholder="Date de l'anti-puce"
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <label
-                htmlFor="provenance"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Provenance
-              </label>
-              <select
-                id="provenance"
-                value={provenance}
-                onChange={(e) => setProvenance(e.target.value)}
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Sélectionner la provenance</option>
-                {provenances && provenances.length > 0 ? (
-                  provenances.map((p) => (
-                    <option
-                      key={`provenance-${p.id_provenance || p.id}`}
-                      value={p.id_provenance || p.id}
-                    >
-                      {p.libelle_provenance || p.libelle || "Sans libellé"}
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>
-                    Chargement des provenances...
-                  </option>
-                )}
-              </select>
-            </div>
-            <div>
-              <label
-                htmlFor="statut"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Statut
-              </label>
-              <select
-                id="statut"
-                value={statut}
-                onChange={(e) => setStatut(e.target.value)}
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Sélectionner le statut</option>
-                {statuts && statuts.length > 0 ? (
-                  statuts.map((s) => (
-                    <option
-                      key={`statut-${s.id_statut || s.id}`}
-                      value={s.id_statut || s.id}
-                    >
-                      {s.libelle_statut || s.libelle || "Sans libellé"}
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>
-                    Chargement des statuts...
-                  </option>
-                )}
-              </select>
-            </div>
-            <div>
-              <label
-                htmlFor="categorie"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Catégorie
-              </label>
-              <select
-                id="categorie"
-                value={categorie}
-                onChange={(e) => setCategorie(e.target.value)}
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Sélectionner la catégorie</option>
-                {categories && categories.length > 0 ? (
-                  categories.map((c) => (
-                    <option
-                      key={`categorie-${c.id_categorie || c.id}`}
-                      value={c.id_categorie || c.id}
-                    >
-                      {c.libelle_categorie || c.libelle || "Sans libellé"}
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>
-                    Chargement des catégories...
-                  </option>
-                )}
-              </select>
+
+            {/* Caractéristiques supplémentaires */}
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Caractéristiques supplémentaires
+              </h3>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="steriliseCheckbox"
+                    checked={sterilise}
+                    onChange={(e) => setSterilise(e.target.checked)}
+                    className="mr-2"
+                  />
+                  <label
+                    htmlFor="steriliseCheckbox"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Stérilisé ?
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="biberonnageCheckbox"
+                    checked={biberonnage}
+                    onChange={(e) => setBiberonnage(e.target.checked)}
+                    className="mr-2"
+                  />
+                  <label
+                    htmlFor="biberonnageCheckbox"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Biberonnage ?
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Caractéristiques supplémentaires */}
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Caractéristiques supplémentaires
-          </h3>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="steriliseCheckbox"
-                checked={sterilise}
-                onChange={(e) => setSterilise(e.target.checked)}
-                className="mr-2"
-              />
-              <label
-                htmlFor="steriliseCheckbox"
-                className="text-sm font-medium text-gray-700"
-              >
-                Stérilisé ?
-              </label>
+          {/* Colonne de droite */}
+          <div className="space-y-4">
+            {/* Statut et caractéristiques */}
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Statut et caractéristiques
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="faInput"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    FA
+                  </label>
+                  <div ref={faInputRef} className="relative">
+                    <div className="flex items-center">
+                      <input
+                        type="text"
+                        id="faInput"
+                        value={fa}
+                        onChange={handleFaChange}
+                        onFocus={() => setShowFaList(true)}
+                        placeholder="Saisir le prénom du FA"
+                        className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        autoComplete="off"
+                      />
+                      <FaCaretDown
+                        className="ml-2 cursor-pointer"
+                        onClick={toggleFaList}
+                      />
+                    </div>
+                    {showFaList && filteredFas.length > 0 && (
+                      <div className="absolute z-10 w-full bg-white border rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+                        {filteredFas.map((f) => (
+                          <div
+                            key={`fa-suggestion-${f?.id_fa}`}
+                            className="p-3 hover:bg-gray-100 cursor-pointer transition-colors duration-150"
+                            onClick={() => handleFaClick(f)}
+                          >
+                            <div className="font-medium">
+                              {f?.prenom_fa || "Sans prénom"}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {f?.commune_fa && <span>{f.commune_fa}</span>}
+                              {f?.libelle_reseausociaux && (
+                                <span className="ml-2">
+                                  • {f.libelle_reseausociaux}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label
+                    htmlFor="sexe"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Sexe
+                  </label>
+                  <select
+                    id="sexe"
+                    value={sexe}
+                    onChange={(e) => {
+                      console.log("Valeur sélectionnée:", e.target.value);
+                      setSexe(e.target.value);
+                    }}
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option key="default-select" value="">
+                      Sélectionner le sexe
+                    </option>
+                    {sexes && sexes.length > 0 ? (
+                      sexes.map((s) => (
+                        <option
+                          key={`sexe-${s.id_sexe || s.id}`}
+                          value={s.id_sexe || s.id}
+                        >
+                          {s.libelle_sexe || s.libelle || "Sans libellé"}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        Chargement des sexes...
+                      </option>
+                    )}
+                  </select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="provenance"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Provenance
+                  </label>
+                  <select
+                    id="provenance"
+                    value={provenance}
+                    onChange={(e) => setProvenance(e.target.value)}
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Sélectionner la provenance</option>
+                    {provenances && provenances.length > 0 ? (
+                      provenances.map((p) => (
+                        <option
+                          key={`provenance-${p.id_provenance || p.id}`}
+                          value={p.id_provenance || p.id}
+                        >
+                          {p.libelle_provenance || p.libelle || "Sans libellé"}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        Chargement des provenances...
+                      </option>
+                    )}
+                  </select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="statut"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Statut
+                  </label>
+                  <select
+                    id="statut"
+                    value={statut}
+                    onChange={(e) => setStatut(e.target.value)}
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Sélectionner le statut</option>
+                    {statuts && statuts.length > 0 ? (
+                      statuts.map((s) => (
+                        <option
+                          key={`statut-${s.id_statut || s.id}`}
+                          value={s.id_statut || s.id}
+                        >
+                          {s.libelle_statut || s.libelle || "Sans libellé"}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        Chargement des statuts...
+                      </option>
+                    )}
+                  </select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="categorie"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Catégorie
+                  </label>
+                  <select
+                    id="categorie"
+                    value={categorie}
+                    onChange={(e) => setCategorie(e.target.value)}
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Sélectionner la catégorie</option>
+                    {categories && categories.length > 0 ? (
+                      categories.map((c) => (
+                        <option
+                          key={`categorie-${c.id_categorie || c.id}`}
+                          value={c.id_categorie || c.id}
+                        >
+                          {c.libelle_categorie || c.libelle || "Sans libellé"}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        Chargement des catégories...
+                      </option>
+                    )}
+                  </select>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="biberonnageCheckbox"
-                checked={biberonnage}
-                onChange={(e) => setBiberonnage(e.target.checked)}
-                className="mr-2"
-              />
-              <label
-                htmlFor="biberonnageCheckbox"
-                className="text-sm font-medium text-gray-700"
-              >
-                Biberonnage ?
+
+            {/* Notes */}
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <label htmlFor="noteTextarea" className="block text-sm font-medium text-gray-700 mb-2">
+                Notes
               </label>
+              <textarea
+                id="noteTextarea"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Ajoutez des notes sur l'animal..."
+                className="w-full h-40 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
+
+            {/* Bouton de soumission */}
+            <button
+              type="submit"
+              className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded w-full"
+            >
+              Ajouter animal
+            </button>
           </div>
         </div>
-
-        {/* Notes */}
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
-          <label
-            htmlFor="noteTextarea"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Notes
-          </label>
-          <textarea
-            id="noteTextarea"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Ajoutez des notes sur l'animal..."
-            className="w-full h-32 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded w-full mt-4"
-        >
-          Ajouter animal
-        </button>
       </form>
     </div>
   );
