@@ -305,7 +305,7 @@ function FormCreateAnimal({ onClose }) {
   };
 
   return (
-    <div className="w-[800px]"> {/* Changé de w-[95vw] max-w-7xl à une largeur fixe */}
+    <div className="w-[1000px]"> {/* Changé de w-[95vw] max-w-7xl à une largeur fixe */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4"> {/* Grid container principal pour le layout horizontal */}
           {/* Colonne de gauche */}
